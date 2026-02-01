@@ -35,7 +35,7 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
 
   * Clean, readable summaries of long policy documents
   * AI‑based **impact analysis** (policy intent, affected domains, sentiment)
-  * Uses LLMs with fallbacks and safe‑guards to ensure reliability
+* Uses LLMs with fallbacks and safe‑guards to ensure reliability
 
 ### 🔔 Alerts & Monitoring
 
@@ -132,18 +132,18 @@ us-policywatch/
 
 US PolicyWatch relies on **scheduled ingestion jobs** to stay up‑to‑date.
 
-Recommended setup:
+**Recommended setup:**
 
 * **GitHub Actions** → Cron‑based ingestion triggers
 * **Render** → Always‑on backend API
 
-Scheduled jobs include:
+**Scheduled jobs include:**
 
 * State‑level ingestion
 * Federal & White House ingestion
 * AI impact backfills
 
-This separation ensures:
+**This separation ensures:**
 
 * Reliability
 * Cost efficiency
