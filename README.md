@@ -27,7 +27,7 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
   * Executive orders
   * Proclamations
   * PDF‑based notices
-* Handles pagination, duplicate detection, and source normalization
+* **Handles pagination, duplicate detection, and source normalization**
 
 ### 🧠 AI Summaries & Impact Analysis
 
@@ -35,7 +35,7 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
 
   * Clean, readable summaries of long policy documents
   * AI‑based **impact analysis** (policy intent, affected domains, sentiment)
-* Uses LLMs with fallbacks and safe‑guards to ensure reliability
+* **Uses LLMs with fallbacks and safe‑guards to ensure reliability**
 
 ### 🔔 Alerts & Monitoring
 
@@ -184,7 +184,7 @@ npm run dev
 
 ## 🎯 Project Vision
 
-US PolicyWatch is built for:
+**US PolicyWatch is built for:**
 
 * Students & researchers
 * Policy analysts
@@ -192,7 +192,7 @@ US PolicyWatch is built for:
 * Founders tracking regulatory risk
 * Anyone who wants **signal, not noise**
 
-This project prioritizes:
+**This project prioritizes:**
 
 * Real data
 * Real infrastructure
@@ -202,9 +202,9 @@ This project prioritizes:
 
 ## 📌 Status
 
-🚧 Actively developed
+**🚧 Actively developed**
 
-Upcoming:
+**Upcoming:**
 
 * Production cron pipelines
 * Advanced alert rules
