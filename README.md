@@ -39,7 +39,7 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
 
 ### 🔔 Alerts & Monitoring
 
-* Users can:
+* **Users can:**
 
   * Subscribe to specific states or feeds
   * Receive alerts when new policy items are published
@@ -48,8 +48,8 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
 
 ### 🔐 Authentication & Preferences
 
-* Secure authentication (JWT‑based)
-* User‑specific preferences:
+* **Secure authentication (JWT‑based)**
+* **User‑specific preferences:**
 
   * States to track
   * Feed types to monitor
