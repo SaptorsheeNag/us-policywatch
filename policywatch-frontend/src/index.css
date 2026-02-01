@@ -1,0 +1,73 @@
+/* src/index.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ✅ Harvey-style theme tokens */
+:root {
+  --bg0: #050508;
+  --bg1: #070812;
+
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+
+  --card: rgba(255, 255, 255, 0.04);
+  --card-border: rgba(255, 255, 255, 0.08);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  /* ✅ Harvey-ish dark background */
+  background:
+    /* TOP: red left + blue right */
+    radial-gradient(900px 500px at 20% 10%, rgba(255, 60, 85, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 80% 15%, rgba(60, 140, 255, 0.10), transparent 60%),
+
+    /* MIDDLE: two soft white blobs (more visible + centered) */
+    radial-gradient(820px 520px at 45% 55%, rgba(255, 255, 255, 0.09), transparent 65%),
+    radial-gradient(820px 520px at 55% 55%, rgba(255, 255, 255, 0.08), transparent 65%),
+
+    /* BOTTOM: another red left + blue right pair */
+    radial-gradient(900px 600px at 18% 92%, rgba(255, 60, 85, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 82% 92%, rgba(60, 140, 255, 0.09), transparent 60%),
+
+    /* base */
+    linear-gradient(180deg, var(--bg1), var(--bg0));
+  color-scheme: dark;
+}
+
+::selection {
+  background: rgba(249, 115, 22, 0.35);
+}
+
+/* optional, used if you want glossy Apple-like buttons */
+.apple-button {
+  background: linear-gradient(to bottom, #1e1e1e, #070707);
+  border: 1px solid #2a2a2a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  border-radius: 18px;
+  padding: 8px 16px;
+  color: white;
+  transition: 0.15s ease;
+}
+
+.apple-button:hover {
+  background: linear-gradient(to bottom, #292929, #0f0f0f);
+}
+
+select, input, button {
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,31 @@
+name: Ingest Feeds
+
+on:
+  schedule:
+    - cron: "0 7 * * *"      # daily 07:00 UTC
+    - cron: "0 8 * * 1"      # weekly Mondays 08:00 UTC (states)
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit /ingest/federal-register
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer $CRON_KEY" \
+            https://YOUR_API_HOST/ingest/federal-register || exit 1
+      - name: Hit White House / OFAC daily
+        run: |
+          curl -sS -X POST -H "Authorization: Bearer $CRON_KEY" https://YOUR_API_HOST/ingest/white-house || exit 1
+          curl -sS -X POST -H "Authorization: Bearer $CRON_KEY" https://YOUR_API_HOST/ingest/ofac || exit 1
+      - name: States weekly (only on weekly event)
+        if: github.event.schedule == '0 8 * * 1'
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer $CRON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            https://YOUR_API_HOST/ingest/states || exit 1
+    env:
+      CRON_KEY: ${{ secrets.CRON_KEY }}

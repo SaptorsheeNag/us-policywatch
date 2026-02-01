@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ Harvey-style fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ❌ REMOVE rsms Inter (we already load it above) -->
+    <!-- <link rel="stylesheet" href="https://rsms.me/inter/inter.css"> -->
+
+    <!-- ❌ REMOVE hardcoded body/title font rules -->
+    <!-- You can keep @font-face if you want, but they are unused -->
+    <style>
+      @font-face {
+        font-family: 'SF Pro Display';
+        font-style: normal;
+        font-weight: 100 900;
+        src: url('https://sf.abarba.me/SF-Pro-Display.woff2') format('woff2');
+      }
+
+      @font-face {
+        font-family: 'SF Pro Text';
+        font-style: normal;
+        font-weight: 100 900;
+        src: url('https://sf.abarba.me/SF-Pro-Text.woff2') format('woff2');
+      }
+    </style>
+
+    <title>policywatch-frontend</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,4721 @@
+/* src/App.css */
+
+.page{
+  position: relative;
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 3.25rem 1.5rem 3.25rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  color: var(--text);
+  font-family: var(--font-sans);
+  position: relative;
+  z-index: 1;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background: #07080d;
+}
+
+
+/* ---------- Subtle animated background (global) ---------- */
+
+/* Make sure the page background stays clean black */
+body {
+  background: #07080d; /* keep "plain black" but slightly richer */
+  position: relative;   /* ✅ anchor absolute pseudo element */
+  overflow-x: hidden;
+}
+
+/* ---------- Global blobs (top-left) — scrolls away (NOT fixed) ---------- */
+/* ---------- Global blobs (big like old design) — scrolls away ---------- */
+body::before,
+body::after{
+  content:"";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+
+  /* big canvas so it feels like the old “full-field” look */
+  width: 1700px;
+  height: 1200px;
+
+  filter: blur(28px) saturate(1.18) contrast(1.04);
+  opacity: 0.90;
+  transform: translate3d(0,0,0);
+
+  /* ✅ soft fade so no edge clippings */
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 50%, #000 0%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(70% 70% at 50% 50%, #000 0%, #000 60%, transparent 100%);
+}
+
+/* LEFT blob (like your old one) */
+body::before{
+  top: -420px;
+  left: -520px;
+
+  background:
+  /* BLUE (main) */
+  radial-gradient(860px 620px at 16% 18%, rgba(70,140,255,0.40), transparent 64%),
+  radial-gradient(720px 520px at 26% 34%, rgba(90,170,255,0.28), transparent 66%),
+
+  /* WHITE (highlight) — slightly reduced so it doesn't wash red */
+  radial-gradient(780px 560px at 28% 10%, rgba(255,255,255,0.40), transparent 62%),
+  radial-gradient(680px 520px at 10% 26%, rgba(255,255,255,0.20), transparent 68%),
+
+  /* ✅ RED (stronger + tighter falloff so it "pops") */
+  radial-gradient(760px 560px at 30% 28%, rgba(255,80,110,0.28), transparent 62%),
+  radial-gradient(640px 480px at 14% 40%, rgba(255,70,105,0.20), transparent 64%);
+}
+
+
+/* RIGHT blob (more visible, matches the vibe) */
+body::after{
+  top: -420px;
+  right: -540px;
+
+  background:
+  /* BLUE (main) */
+  radial-gradient(860px 620px at 86% 18%, rgba(70,140,255,0.38), transparent 64%),
+  radial-gradient(720px 520px at 74% 34%, rgba(90,170,255,0.26), transparent 66%),
+
+  /* WHITE (highlight) — slightly reduced */
+  radial-gradient(780px 560px at 78% 10%, rgba(255,255,255,0.34), transparent 62%),
+  radial-gradient(680px 520px at 92% 28%, rgba(255,255,255,0.18), transparent 68%),
+
+  /* ✅ RED (stronger + more concentrated near edge) */
+  radial-gradient(820px 600px at 68% 28%, rgba(255,80,110,0.26), transparent 62%),
+  radial-gradient(680px 520px at 92% 34%, rgba(255,65,100,0.22), transparent 64%);
+}
+
+
+/* Respect accessibility */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none !important;
+  }
+}
+
+
+body::selection { background: rgba(90,150,255,0.25); }
+
+
+/* ---------- Apple News–style header ---------- */
+
+.app__header {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+
+  padding-top: 5.2rem;
+
+  /* FULL-BLEED WITHOUT 100vw (no horizontal scroll) */
+  width: 100%;
+  left: 0;
+  margin-left: 0;
+  margin-right: 0;
+
+  /* keep content aligned with .app */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ---------- Subtle header-only aurora (PERF SAFE) ---------- */
+.app__header::before,
+.app__header::after{
+  content:"";
+  position:absolute;
+  inset:-220px;                 /* smaller than -140px */
+  pointer-events:none;
+  z-index: 0;
+  filter: blur(38px) saturate(1.04); /* lower blur */
+  opacity: 0.45;               /* lower opacity */
+  transform: translate3d(0,0,0);
+}
+
+/* fade the aurora so it doesn't hard-cut into a rectangle */
+.app__header::before,
+.app__header::after{
+  -webkit-mask-image: radial-gradient(120% 85% at 50% 0%, #000 58%, transparent 100%);
+  mask-image: radial-gradient(120% 85% at 50% 0%, #000 58%, transparent 100%);
+}
+
+.app__header::before{
+  background:
+    /* red */
+    radial-gradient(520px 360px at 14% 22%, rgba(255, 90, 120, 0.22), transparent 64%),
+    /* white */
+    radial-gradient(520px 360px at 46% 12%, rgba(255, 255, 255, 0.14), transparent 60%),
+    /* blue */
+    radial-gradient(560px 380px at 78% 26%, rgba(90, 150, 255, 0.20), transparent 64%);
+}
+
+.app__header::after{
+  background:
+    radial-gradient(560px 380px at 84% 22%, rgba(255,90,120,0.18), transparent 64%),
+    radial-gradient(520px 360px at 70% 70%, rgba(90,150,255,0.10), transparent 64%);
+}
+
+.app__header::before,
+.app__header::after{
+  filter: blur(32px) saturate(1.10);
+  opacity: 0.42;
+}
+
+
+/* Make sure header content sits above the blobs */
+.app__header > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* keep grain behind */
+.app__header > .headerGrain{
+  z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .app__header::before,
+  .app__header::after{
+    animation: none !important;
+  }
+}
+
+/* ---------- Header-only grain (scrolls away) ---------- */
+.app__header .headerGrain {
+  display: block; 
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0; /* sits above blobs, below content */
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+
+  /* subtle “noise-like” pattern (no fixed positioning) */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.08),
+      rgba(255,255,255,0.08) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+
+.app__header-inner {
+  max-width: 1120px; /* match .app width */
+  width: 100%;
+}
+
+
+/* Title uses .title-font (SF Pro Display from index.html) */
+.app__title {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-serif);
+  font-size: 4rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.app__tagline {
+  margin: 0.35rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 720px;
+}
+
+/* ---------- Tagline: Harvey glass + Apple News calm ---------- */
+
+@keyframes taglineIn {
+  from { opacity: 0; transform: translateY(10px); filter: blur(10px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+.taglineWrap{
+  width: 100%;
+  max-width: 980px;           /* nice editorial line length */
+  margin-top: 0.9rem;
+}
+
+.app__tagline--glass{
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  /* better alignment / rhythm */
+  margin: 0;
+  padding: 0.95rem 1.05rem;
+
+  border-radius: 1.15rem;
+
+  background: rgba(255,255,255,0.028);
+  border: 1px solid rgba(255,255,255,0.10);
+
+  box-shadow:
+    0 22px 70px rgba(0,0,0,0.52),
+    0 0 0 1px rgba(255,255,255,0.03) inset;
+
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+
+  /* text polish */
+  color: rgba(255,255,255,0.74);
+  font-size: 1.04rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+
+  animation: taglineIn 680ms cubic-bezier(.2,.85,.2,1) both;
+  animation-delay: 120ms;
+}
+
+/* rim highlight */
+.app__tagline--glass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding:1px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 2;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.34),
+    rgba(255,255,255,0.08) 38%,
+    rgba(255,255,255,0.16) 70%,
+    rgba(255,255,255,0.26)
+  );
+
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0.55;
+}
+
+/* subtle red-left / blue-right edge tint (NOT center fill) */
+.app__tagline--glass::after{
+  content:"";
+  position:absolute;
+  inset:-46px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 0;
+
+  background:
+    radial-gradient(300px 180px at 6% 50%, rgba(255,85,120,0.18), transparent 68%),
+    radial-gradient(320px 190px at 94% 50%, rgba(90,150,255,0.16), transparent 70%),
+    radial-gradient(520px 240px at 50% 115%, rgba(255,255,255,0.10), transparent 62%);
+
+  filter: blur(20px) saturate(1.08);
+  opacity: 0.90;
+}
+
+/* a single calm “sheen” sweep */
+@keyframes taglineSheen {
+  0%   { transform: translateX(-45%) rotate(12deg); opacity: 0; }
+  18%  { opacity: 0.28; }
+  55%  { opacity: 0.16; }
+  100% { transform: translateX(155%) rotate(12deg); opacity: 0; }
+}
+
+.app__tagline--glass .taglineSheen{
+  position:absolute;
+  top:-55%;
+  left:-70%;
+  width: 55%;
+  height: 220%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  filter: blur(10px);
+  opacity: 0;
+  pointer-events:none;
+  animation: taglineSheen 2.7s ease-in-out 0.55s 1;
+  z-index: 1;
+}
+
+/* ---------- Tagline FULL-WIDTH + better type ---------- */
+
+.taglineWrap--full{
+  width: 100%;
+  max-width: none;            /* ✅ remove the 980px cap */
+  margin-top: 0.95rem;
+}
+
+/* ✅ force full-width tagline box + remove inner 720px cap */
+.taglineWrap--full{
+  max-width: none !important;
+  width: 100%;
+}
+
+.taglineWrap--full .app__tagline{
+  max-width: none !important;   /* <-- this was the real blocker */
+  width: 100%;
+}
+
+.taglineWrap--full .app__tagline--glass{
+  width: 100%;
+  display: block;
+}
+
+
+.taglineBox{
+  position: relative;
+  width: 100%;
+
+  /* ✅ ensure it doesn't spill into the tabs area visually */
+  margin-bottom: 0.9rem;
+}
+
+
+.app__tagline--glass{
+  width: 100%;
+  display: block;
+
+  font-family: var(--font-serif);  /* ✅ same as title */
+  font-weight: 400;                /* ✅ clean serif weight */
+  font-size: 1.34rem;
+  line-height: 1.80;
+  letter-spacing: -0.005em;        /* subtle Apple-ish tightening */
+
+  color: rgba(255,255,255,0.82);
+  text-wrap: pretty;               /* ✅ not balance */
+}
+
+/* the animated text container */
+.taglineText{
+  display: inline-block;
+  will-change: transform, opacity, filter;
+  white-space: normal;
+}
+
+/* slide-in-from-left intro (first load) */
+@keyframes taglineSlideIn{
+  from { opacity: 0; transform: translateX(-18px); filter: blur(8px); }
+  to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+}
+
+.taglineText{
+  animation: taglineSlideIn 900ms cubic-bezier(.16,.9,.18,1) both;
+  animation-delay: 160ms;
+}
+
+/* reduce motion if needed */
+@media (prefers-reduced-motion: reduce){
+  .taglineText{ animation: none !important; }
+}
+
+/* ---------- Border comet (reliable, clockwise, Apple-ish) ---------- */
+
+@property --spin {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes taglineCometSpin {
+  to { --spin: 360deg; }
+}
+
+/* animated border sweep */
+.taglineBox::after{
+  content:"";
+  position:absolute;
+  inset: -1px;                 /* sits just outside the glass border */
+  border-radius: 1.25rem;
+  padding: 1px;
+  pointer-events:none;
+  z-index: 10;
+
+  /* bright “comet head” + faint trail */
+  background: conic-gradient(
+    from var(--spin),
+    transparent 0deg,
+    transparent 320deg,
+    rgba(255,255,255,0.00) 332deg,
+    rgba(255,255,255,0.65) 344deg,
+    rgba(255,255,255,0.12) 356deg,
+    transparent 360deg
+  );
+
+  /* keep only the 1px border */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  filter: blur(0.35px);
+  opacity: 0.55;
+
+  animation: taglineCometSpin 4.8s linear infinite;
+}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce){
+  .taglineBox::after{ animation: none !important; }
+}
+
+
+
+/* ---------- Top bar: Made by + socials ---------- */
+
+.app__topbar {
+  position: absolute;
+  top: -2.15rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: auto;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+/* column: madeby on top, socials below */
+.app__topbar-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* ---------- Topbar glass box (Made by + socials wrapper) ---------- */
+
+.topbarGlass{
+  position: relative;
+  isolation: isolate;
+  padding: 0.9rem 1.05rem 0.95rem;
+  border-radius: 1.35rem;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.028);
+
+  box-shadow:
+    0 22px 70px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.04) inset;
+
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+/* sexy opaque-ish rim */
+.topbarGlass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 2;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.38),
+    rgba(255,255,255,0.08) 35%,
+    rgba(255,255,255,0.16) 65%,
+    rgba(255,255,255,0.28)
+  );
+
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0.55;
+}
+
+/* color tint: left red, right blue, bottom white */
+.topbarGlass::after{
+  content:"";
+  position:absolute;
+  inset:-28px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 0;
+
+  background:
+    /* left red */
+    radial-gradient(260px 180px at 6% 45%, rgba(255,85,120,0.22), transparent 65%),
+    /* right blue */
+    radial-gradient(260px 180px at 94% 45%, rgba(90,150,255,0.22), transparent 65%),
+    /* bottom white */
+    radial-gradient(420px 220px at 50% 108%, rgba(255,255,255,0.16), transparent 62%);
+
+  filter: blur(18px) saturate(1.15);
+  opacity: 0.95;
+}
+
+/* keep your existing madeby + socials above the tint */
+.topbarGlass > *{
+  position: relative;
+  z-index: 3;
+}
+
+.topbarGlass:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.038);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow:
+    0 28px 92px rgba(0,0,0,0.62),
+    0 0 0 1px rgba(255,255,255,0.06) inset,
+    0 0 30px rgba(120,160,255,0.08);
+}
+
+.topbarGlass:hover::before{
+  opacity: 0.78;
+}
+
+.topbarGlass:hover::after{
+  filter: blur(16px) saturate(1.22);
+  opacity: 1;
+}
+
+.topbarGlass .app__topbar-center{
+  gap: 0.55rem;
+}
+
+
+
+.madeby {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  backdrop-filter: blur(12px) saturate(130%);
+  transition: transform 0.16s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.madeby::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.madeby:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 26px rgba(255, 255, 255, 0.06);
+}
+
+.madeby__label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.madeby__name {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.socials {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.socialbtn {
+  position: relative;
+  isolation: isolate;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  backdrop-filter: blur(12px) saturate(130%);
+  transition: transform 0.16s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.socialbtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.socialbtn:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 18px 58px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 28px rgba(120, 160, 255, 0.09);
+}
+
+.socialbtn__icon {
+  width: 18px;
+  height: 18px;
+  fill: rgba(255, 255, 255, 0.88);
+  opacity: 0.95;
+}
+
+/* mobile: stack nicely */
+@media (max-width: 640px) {
+  .app__header {
+    padding-top: 6.0rem;
+  }
+}
+
+
+/* ---------- Tabs ---------- */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  position: relative;
+  isolation: isolate;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 0.55rem 1.05rem;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.86);
+
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+
+  backdrop-filter: blur(12px) saturate(130%);
+  transition: transform 0.16s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* glass rim */
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.06) 35%,
+    rgba(255, 255, 255, 0.12) 65%,
+    rgba(255, 255, 255, 0.18)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.tab:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.60),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 22px rgba(255, 255, 255, 0.06);
+}
+
+.tab:hover::before {
+  opacity: 0.6;
+}
+
+.tab--active {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: rgba(255, 255, 255, 0.96);
+  font-weight: 650;
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.07) inset,
+    0 0 28px rgba(120, 160, 255, 0.08);
+}
+
+.tab--active::before {
+  opacity: 0.75;
+}
+
+/* ---------- Feed ---------- */
+
+.app__main {
+  margin-top: 0.5rem;
+}
+
+.app__feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.app__feed-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.app__feed-count {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+/* ---------- Feed controls (Sort / Group / Date range) ---------- */
+
+.feed-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin: 0 0.8rem;
+}
+
+/* glass pill container */
+.feed-controls__field {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+
+  padding: 0.48rem 0.75rem;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  backdrop-filter: blur(12px) saturate(125%);
+  transition: transform 0.16s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* sexy rim like your cards */
+.feed-controls__field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.24),
+    rgba(255, 255, 255, 0.06) 35%,
+    rgba(255, 255, 255, 0.12) 65%,
+    rgba(255, 255, 255, 0.18)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.feed-controls__field:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.feed-controls__label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* ---- SELECT styling (pill + custom arrow) ---- */
+
+.feed-controls__select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  padding-right: 1.35rem; /* room for arrow */
+  cursor: pointer;
+  line-height: 1.1;
+}
+
+/* custom arrow */
+.feed-controls__field:has(.feed-controls__select)::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  margin-left: -0.2rem;
+  opacity: 0.75;
+  pointer-events: none;
+
+  background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.95), rgba(255,255,255,0.0) 60%);
+  clip-path: polygon(20% 35%, 80% 35%, 50% 75%);
+}
+
+/* improve dropdown menu look where browser allows */
+.feed-controls__select option {
+  background: #0b0c12;        /* dark dropdown */
+  color: rgba(255,255,255,0.92);
+}
+
+/* ---- Date inputs ---- */
+
+.feed-controls__dates {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.feed-controls__date {
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  padding: 0.05rem 0.15rem;
+  min-width: 8.2rem;
+
+  color-scheme: dark; /* helps date picker UI stay dark */
+}
+
+/* make the calendar icon visible on dark bg (Chrome/WebKit) */
+.feed-controls__date::-webkit-calendar-picker-indicator {
+  opacity: 0.75;
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.feed-controls__dash {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ---- Clear button, same premium style ---- */
+
+.feed-controls__clear {
+  position: relative;
+  isolation: isolate;
+
+  border-radius: 999px;
+  padding: 0.52rem 0.95rem;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  backdrop-filter: blur(12px) saturate(125%);
+  transition: transform 0.16s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.feed-controls__clear::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.feed-controls__clear:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.feed-controls__clear:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+/* on smaller screens, keep it neat */
+@media (max-width: 900px) {
+  .app__feed-header {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .feed-controls {
+    margin: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+
+.app__status {
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(31, 41, 55, 0.8);
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.app__status--error {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fecaca;
+}
+
+/* ---------- Item cards ---------- */
+
+.item-list {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.item-card {
+  position: relative;
+  isolation: isolate; /* keeps glow layers clean */
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 1.1rem;
+  padding: 1.15rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px) saturate(115%);
+
+  transition:
+    transform 0.16s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    backdrop-filter 0.18s ease;
+}
+
+/* glassy rim */
+.item-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;                 /* rim thickness */
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0.06) 35%,
+    rgba(255, 255, 255, 0.12) 65%,
+    rgba(255, 255, 255, 0.20)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* hover intensify */
+.item-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  backdrop-filter: blur(14px) saturate(135%);
+}
+
+.item-card:hover::before {
+  opacity: 0.65;
+}
+
+.item-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.item-card__source {
+  font-size: 0.86rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: none;              /* ✅ no more shouting */
+  color: rgba(255,255,255,0.72);
+
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: baseline;
+
+  /* subtle “kicker” polish */
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+
+.item-card__meta {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.item-card__pill,
+.item-card__pill--soft {
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.item-card__date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.item-card__title {
+  display: block;
+  margin: 0.25rem 0 0.45rem;
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1.05;
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+}
+
+.item-card__title:hover {
+  text-decoration: underline;
+}
+
+.item-card__summary {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* pagination controls */
+/* ---------- Pagination (Harvey-ish) ---------- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.6rem;
+  flex-wrap: wrap;
+}
+
+/* shared pill look */
+.pagination__button,
+.pagination__page {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.84);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0.52rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
+}
+
+.pagination__button:hover:not(:disabled),
+.pagination__page:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.pagination__button:disabled,
+.pagination__page:disabled {
+  opacity: 0.42;
+  cursor: default;
+  transform: none;
+}
+
+/* page number group */
+.pagination__pages {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* page number width consistency */
+.pagination__page {
+  min-width: 2.35rem;
+  text-align: center;
+  padding: 0.5rem 0.75rem;
+}
+
+/* active page */
+.pagination__page--active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+}
+
+.pagination__ellipsis {
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0 0.15rem;
+  font-size: 0.95rem;
+}
+
+.pagination__button {
+  padding: 0.52rem 0.85rem;
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .app {
+    padding: 2rem 1.1rem 2.25rem;
+  }
+
+  .app__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .app__title {
+    font-size: 2.4rem;
+  }
+
+}
+
+/* ---------- What's new (carousel) ---------- */
+
+.whatsnew {
+  margin: 1.1rem 0 1.35rem;
+}
+
+.whatsnew__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.whatsnew__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.whatsnew__dots {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.whatsnew__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.whatsnew__dot.is-active {
+  background: rgba(255, 255, 255, 0.70);
+}
+
+.whatsnew__viewport {
+  position: relative;
+  overflow: hidden;          /* keep carousel clipping */
+  border-radius: 1.15rem;
+
+  /* real breathing room on ALL sides so hover never clips the rim */
+  padding: 8px;
+}
+
+.whatsnew__track{
+  display: flex;
+  width: 100%;
+  transition: transform 520ms cubic-bezier(.2,.85,.2,1);
+  will-change: transform;
+
+  align-items: flex-start; /* <-- KEY FIX */
+}
+
+.whatsnew__card {
+  flex: 0 0 100%;
+  position: relative;
+  isolation: isolate;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  padding: 1.05rem 1.1rem;
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px) saturate(125%);
+}
+
+.whatsnew__card {
+  transition:
+    transform 0.16s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    backdrop-filter 0.18s ease;
+}
+
+/* extra safety: don’t let card stretch */
+.whatsnew__card{
+  align-self: flex-start;
+  height: auto;
+}
+
+.whatsnew__card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 28px rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px) saturate(145%);
+}
+
+.whatsnew__card:hover::before {
+  opacity: 0.65;
+}
+
+
+.whatsnew__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0.06) 35%,
+    rgba(255, 255, 255, 0.12) 65%,
+    rgba(255, 255, 255, 0.20)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.whatsnew__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.whatsnew__jur {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.70);
+}
+
+.whatsnew__pills {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.whatsnew__pill {
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.whatsnew__pill--soft {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.whatsnew__date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.whatsnew__headline {
+  display: block;
+  margin: 0.15rem 0 0.45rem;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.05;
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+}
+
+.whatsnew__headline:hover {
+  text-decoration: underline;
+}
+
+.whatsnew__summary {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.app__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.app__logo {
+  width: 54px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- AI Impact block ---------- */
+
+.impact {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0; /* ✅ add this */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.impact--slide {
+  margin-top: 0.7rem;
+  padding-top: 0.65rem;
+}
+
+/* tighter + more “editorial” inside the carousel */
+.impact--slide .impact__industry {
+  padding: 0.5rem 0.6rem;
+}
+
+.impact--slide .impact__why {
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.impact--slide .impact__overall {
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+
+.impact__top {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+
+.impact__label {
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;          /* ✅ more “ticker” vibe */
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.70);
+}
+
+.impact__status {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-left: auto;
+}
+
+/* score chip: red/gray/green */
+.impact-chip {
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.impact-chip--neg {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.30);
+  color: rgba(255, 210, 210, 0.95);
+}
+
+.impact-chip--neu {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.impact-chip--pos {
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.28);
+  color: rgba(200, 255, 220, 0.95);
+}
+
+.impact__section {
+  margin-top: 0.55rem;
+}
+
+.impact__section:last-child{
+  margin-bottom: 0;
+}
+
+
+.impact__subtitle {
+  font-size: 0.86rem;              /* ✅ bigger than before */
+  font-weight: 650;                /* ✅ stronger hierarchy */
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.82);
+  margin-bottom: 0.45rem;
+}
+
+/* ✅ Make "Overall Why" feel like a real section header */
+.impact__subtitle--overall {
+  font-family: var(--font-serif);  /* ✅ premium look */
+  font-size: 0.95rem;              /* ✅ slightly bigger */
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.88);
+  margin-top: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.impact__industries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.impact__industry {
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ✅ Overall Why card (matches industry cards) */
+.impact__overallCard {
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0; /* ✅ add this */
+}
+
+.impact__overall {
+  margin: 0;                 /* helps if it ever becomes a <p> later */
+}
+
+
+.impact__industryRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.impact__industryName {
+  font-weight: 650;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.impact__dir {
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.impact__dir--positive {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.22);
+}
+
+.impact__dir--negative {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.impact__dir--mixed {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.impact__metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  padding: 0.12rem 0.42rem;
+  border-radius: 999px;
+
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.impact__metricLabel {
+  font-size: 0.70rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.60);
+}
+
+.impact__why {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.70);
+}
+
+.impact__overall {
+  font-size: 0.95rem;              /* ✅ slightly bigger */
+  line-height: 1.62;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.impact__top {
+  padding-bottom: 0.35rem;
+}
+
+/* ---------- Auth top-right (FIXED) ---------- */
+.app__authbar{
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  left: auto;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+
+  z-index: 10000; /* above header glow */
+}
+
+@media (max-width: 640px){
+  .app__authbar{
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* ---------- Live status pill (top-left, aligned with content edge) ---------- */
+.livePill{
+  position: absolute;
+  top: 12px;
+
+  /* 🔥 pull it left past the app padding */
+  left: -1.8rem;
+  padding-left: 1.25rem;
+
+  z-index: 10000;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  padding-top: 0.58rem;
+  padding-bottom: 0.58rem;
+  padding-right: 0.85rem;
+
+  width: auto;
+  max-width: min(560px, calc(100vw - 200px));
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.032);
+
+  box-shadow:
+    0 18px 58px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.04) inset;
+
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* rim highlight */
+.livePill::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 2;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.32),
+    rgba(255,255,255,0.08) 40%,
+    rgba(255,255,255,0.18)
+  );
+
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0.50;
+}
+
+/* subtle edge tint like your other glass (red-left + blue-right) */
+.livePill::after{
+  content:"";
+  position:absolute;
+  inset:-34px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 0;
+
+  background:
+    radial-gradient(220px 120px at 12% 50%, rgba(255,85,120,0.20), transparent 65%),
+    radial-gradient(240px 130px at 88% 50%, rgba(90,150,255,0.18), transparent 65%),
+    radial-gradient(320px 160px at 50% 115%, rgba(255,255,255,0.10), transparent 70%);
+
+  filter: blur(16px) saturate(1.12);
+  opacity: 0.95;
+}
+
+.livePill:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.045);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.liveText{
+  position: relative;
+  z-index: 3;
+
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+
+  color: rgba(255,255,255,0.86);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+
+  white-space: normal;
+  line-height: 1.15;
+}
+
+/* dot trio */
+.liveDots{
+  position: relative;
+  z-index: 3;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.liveDot{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.25) inset,
+    0 10px 22px rgba(0,0,0,0.35);
+
+  transform: translateZ(0);
+}
+
+.liveDot--blue{
+  background: rgba(90,150,255,0.95);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.25) inset,
+    0 0 12px rgba(90,150,255,0.20),
+    0 10px 22px rgba(0,0,0,0.35);
+}
+
+.liveDot--white{
+  background: rgba(255,255,255,0.92);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.25) inset,
+    0 0 12px rgba(255,255,255,0.14),
+    0 10px 22px rgba(0,0,0,0.35);
+}
+
+.liveDot--red{
+  background: rgba(255,85,120,0.95);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.25) inset,
+    0 0 12px rgba(255,85,120,0.18),
+    0 10px 22px rgba(0,0,0,0.35);
+}
+
+/* animation: subtle pulse + stagger */
+@keyframes livePulse {
+  0%   { transform: translateY(0) scale(1); opacity: 0.85; }
+  35%  { transform: translateY(-0.5px) scale(1.12); opacity: 1; }
+  70%  { transform: translateY(0) scale(1); opacity: 0.90; }
+  100% { transform: translateY(0) scale(1); opacity: 0.85; }
+}
+
+.liveDot--blue { animation: livePulse 1.25s ease-in-out infinite; }
+.liveDot--white{ animation: livePulse 1.25s ease-in-out infinite; animation-delay: 0.12s; }
+.liveDot--red  { animation: livePulse 1.25s ease-in-out infinite; animation-delay: 0.24s; }
+
+/* tiny sheen sweep inside pill */
+@keyframes liveSheen {
+  0%   { transform: translateX(-60%) rotate(12deg); opacity: 0; }
+  15%  { opacity: 0.28; }
+  55%  { opacity: 0.14; }
+  100% { transform: translateX(160%) rotate(12deg); opacity: 0; }
+}
+
+.liveSheen{
+  position:absolute;
+  top:-70%;
+  left:-60%;
+  width: 48%;
+  height: 240%;
+  z-index: 1;
+  pointer-events:none;
+
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
+  filter: blur(10px);
+
+  animation: liveSheen 3.2s ease-in-out infinite;
+  animation-delay: 0.6s;
+}
+
+/* mobile safety */
+@media (max-width: 640px){
+  .livePill{
+    top: 10px;
+    left: 10px;
+    max-width: calc(100vw - 140px);
+  }
+  .liveText{
+    font-size: 0.76rem;
+  }
+}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce){
+  .liveDot--blue,
+  .liveDot--white,
+  .liveDot--red,
+  .liveSheen{
+    animation: none !important;
+  }
+}
+
+
+.authPill {
+  position: relative;
+  isolation: isolate;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 255, 255, 0.90);
+
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  backdrop-filter: blur(12px) saturate(130%);
+  transition: transform 0.16s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.authPill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.authPill:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.authPill--primary {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.authPill--compact {
+  margin-top: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 750;
+  align-self: flex-start; /* keeps it nicely under email, not full-width */
+}
+
+.authPill--danger {
+  border-color: rgba(239, 68, 68, 0.28);
+  background: rgba(239, 68, 68, 0.14);
+  color: rgba(255, 220, 220, 0.95);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 0 22px rgba(239, 68, 68, 0.12);
+}
+
+.authPill--danger::before {
+  opacity: 0.35;
+}
+
+.authPill--danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.20);
+  border-color: rgba(239, 68, 68, 0.40);
+  box-shadow:
+    0 18px 52px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 0 28px rgba(239, 68, 68, 0.18);
+}
+
+
+.app__authchip {
+  position: relative;
+  isolation: isolate;
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  padding: 0.55rem 0.8rem;
+  border-radius: 1.0rem;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.035);
+
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    0 18px 58px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255,255,255,0.05) inset,
+    0 0 22px rgba(255,255,255,0.06);
+
+  max-width: 260px;
+}
+
+/* brighter glass edge */
+.app__authchip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.16) 65%,
+    rgba(255, 255, 255, 0.26)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.app__authchipLabel {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.62);
+}
+
+.app__authchipEmail {
+  font-size: 0.86rem;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* mobile: don’t overlap header */
+@media (max-width: 640px) {
+  .app__authbar {
+    top: 0.15rem;
+    right: 0.15rem;
+  }
+}
+
+/* ---------- Auth Modal ---------- */
+.authOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000; /* ✅ above auth bar too */
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.authModal {
+  width: min(520px, 95vw);
+  position: relative;
+  isolation: isolate;
+
+  border-radius: 1.2rem;
+  padding: 1.05rem 1.05rem 1.0rem;
+
+  background: rgba(12, 14, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow: 0 24px 80px rgba(0,0,0,0.70);
+  backdrop-filter: blur(14px) saturate(135%);
+}
+
+.authModal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.40),
+    rgba(255, 255, 255, 0.10) 35%,
+    rgba(255, 255, 255, 0.18) 65%,
+    rgba(255, 255, 255, 0.30)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.authModal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.authModal__title {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  color: rgba(255,255,255,0.95);
+}
+
+.authModal__close {
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.authModal__notice {
+  margin-bottom: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.85);
+}
+
+.authModal__notice.is-error {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: rgba(255, 220, 220, 0.95);
+}
+
+.authModal__notice.is-ok {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: rgba(34, 197, 94, 0.10);
+  color: rgba(220, 255, 235, 0.95);
+}
+
+@keyframes authGlowBob {
+  0%   { transform: translate(-2px, -2px) scale(1); }
+  50%  { transform: translate(3px, 2px) scale(1.02); }
+  100% { transform: translate(-2px, -2px) scale(1); }
+}
+
+/* red-left + blue-right glow layer */
+.authModal::after {
+  content: "";
+  position: absolute;
+  inset: -36px;               /* extend beyond modal edges */
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;                /* sits behind the modal glass */
+  filter: blur(26px);
+  opacity: 0.38;              /* mild + translucent */
+
+  background:
+    radial-gradient(340px 220px at 18% 40%, rgba(255, 60, 85, 0.32), transparent 65%),
+    radial-gradient(340px 220px at 82% 45%, rgba(60, 140, 255, 0.30), transparent 65%);
+
+  animation: authGlowBob 6.5s ease-in-out infinite;
+}
+
+
+.authGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+@media (max-width: 520px) {
+  .authGrid2 { grid-template-columns: 1fr; }
+}
+
+.authField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+
+.authLabel {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.62);
+}
+
+.authInput {
+  width: 100%;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.20);
+  color: rgba(255,255,255,0.92);
+  padding: 0.75rem 0.85rem;
+  outline: none;
+}
+
+.authInput:focus {
+  border-color: rgba(255,255,255,0.22);
+}
+
+.authModal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+}
+
+.authBtn {
+  position: relative;
+  isolation: isolate;
+
+  border-radius: 0.95rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(255,255,255,0.14);
+
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255,255,255,0.92);
+
+  font-weight: 700;
+  cursor: pointer;
+
+  backdrop-filter: blur(12px) saturate(130%);
+  transition: transform 0.16s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.authBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.20);
+}
+
+.authBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+
+.authBtn--google {
+  background: rgba(255,255,255,0.08);
+}
+
+.authLinks {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.authLink {
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.78);
+  cursor: pointer;
+  padding: 0.2rem 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.22);
+}
+
+.authLink:hover {
+  color: rgba(255,255,255,0.92);
+  text-decoration-color: rgba(255,255,255,0.35);
+}
+
+/* --- Auth Modal animations --- */
+@keyframes authOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes authModalIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.authOverlay {
+  animation: authOverlayIn 160ms ease-out;
+}
+
+.authModal {
+  animation: authModalIn 220ms cubic-bezier(.2,.85,.2,1);
+}
+
+/* --- Google button spacing + icon layout --- */
+.authBtn--google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem; /* ✅ fixes “sticking too close” */
+}
+
+.authBtn__icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  color: rgba(255,255,255,0.88); /* theme-friendly */
+  opacity: 0.9;
+}
+
+/* --- Divider between Google and email --- */
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.2rem 0 0.85rem;
+  opacity: 0.9;
+}
+
+.authDivider__line {
+  height: 1px;
+  flex: 1;
+  background: rgba(255,255,255,0.10);
+}
+
+.authDivider__text {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.50);
+}
+
+/* Slightly nicer focus feel */
+.authInput:focus {
+  border-color: rgba(255,255,255,0.24);
+  box-shadow: 0 0 0 3px rgba(120, 160, 255, 0.10);
+}
+
+/* -----------------------------
+   WhatsNew header layout
+   actions ABOVE dots
+------------------------------ */
+.whatsnew__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.whatsnew__actions--stack {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.whatsnew__actions--stack .whatsActionRow {
+  display: flex;
+  gap: 10px;
+}
+
+/* tiny glass buttons */
+.glassMiniBtn{
+  position: relative;
+  isolation: isolate;
+
+  border-radius: 999px;
+  padding: 0.48rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.035);
+  color: rgba(255,255,255,0.90);
+
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+
+  cursor:pointer;
+  backdrop-filter: blur(12px) saturate(135%);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  transition: transform 0.16s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.glassMiniBtn::before{
+  content:"";
+  position:absolute; inset:0;
+  padding:1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.26), rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.14));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity:0.45;
+  pointer-events:none;
+}
+
+.glassMiniBtn:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 18px 52px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+
+.whatsnewActions{
+  display:flex;
+  gap:0.5rem;
+}
+
+/* --- shared glass modal (used by Preferences + Alerts) --- */
+.glassOverlay{
+  position: fixed;
+  inset:0;
+  z-index: 20000; /* ✅ above auth bar too */
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(10px);
+  display:grid;
+  place-items:center;
+  padding: 1rem;
+}
+
+.glassModal{
+  width: min(720px, 96vw);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden; /* ✅ needed so blob stays inside */
+
+  border-radius: 1.25rem;
+  padding: 1.1rem 1.1rem 1.0rem;
+
+  background: rgba(12, 14, 22, 0.78);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.70),
+    0 22px 70px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* ✅ Allow modals to fit on small screens and scroll if needed */
+.glassOverlay{
+  overflow-y: auto;                /* <-- key */
+  -webkit-overflow-scrolling: touch;
+  align-items: start;              /* safer than center for tall modals */
+}
+
+/* ✅ Cap modal height and scroll contents */
+.glassModal{
+  max-height: calc(100vh - 2.5rem);
+  overflow: auto;
+}
+
+
+.glassModal--wide{
+  width: min(980px, 96vw);
+}
+
+.glassModal::before{
+  content:"";
+  position:absolute; inset:0;
+  padding:1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.40), rgba(255,255,255,0.10) 35%, rgba(255,255,255,0.18) 65%, rgba(255,255,255,0.30));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity:0.62;
+  pointer-events:none;
+}
+
+.glassModal__bgBlob{
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(520px 320px at 18% 24%, rgba(100,170,255,0.26), transparent 60%),
+    radial-gradient(560px 360px at 82% 30%, rgba(255,90,120,0.22), transparent 60%),
+    radial-gradient(520px 340px at 55% 92%, rgba(120,120,255,0.10), transparent 60%);
+  filter: blur(10px) saturate(1.15);
+  opacity: 0.95;
+}
+
+/* ✅ ensure modal contents are above blob */
+.glassModal > *:not(.glassModal__bgBlob){
+  position: relative;
+  z-index: 1;
+}
+
+
+.glassModal__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:0.75rem;
+  margin-bottom:0.65rem;
+}
+
+.glassModal__title{
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  color: rgba(255,255,255,0.95);
+}
+
+.glassModal__subtitle{
+  color: rgba(255,255,255,0.70);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 0.85rem;
+}
+
+.glassModal__close{
+  border:none;
+  background:transparent;
+  color: rgba(255,255,255,0.85);
+  font-size:1.65rem;
+  cursor:pointer;
+  line-height:1;
+}
+
+.glassNotice{
+  margin-bottom: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.85);
+}
+
+.glassNotice--error{
+  border-color: rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.12);
+  color: rgba(255,220,220,0.95);
+}
+
+.glassLabel{
+  font-size:0.72rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color: rgba(255,255,255,0.62);
+  margin-bottom:0.45rem;
+}
+
+.glassHint{
+  color: rgba(255,255,255,0.62);
+  font-size: 0.92rem;
+}
+
+.glassDivider{
+  height:1px;
+  background: rgba(255,255,255,0.10);
+  margin: 0.95rem 0;
+}
+
+/* preference chips */
+.prefGrid{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.prefGrid--compact .prefChip{
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.prefChip{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.88);
+
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  cursor:pointer;
+
+  box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.02) inset;
+  backdrop-filter: blur(12px) saturate(130%);
+  transition: transform 0.16s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.prefChip:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.prefChip.is-on{
+  background: rgba(255,255,255,0.11);
+  border-color: rgba(255,255,255,0.26);
+  color: rgba(255,255,255,0.96);
+  font-weight: 750;
+}
+
+.glassModal__actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top: 0.85rem;
+}
+.glassModal__actions--row{ justify-content:flex-start; }
+
+.glassBtn{
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
+  border-radius: 0.95rem;
+  padding: 0.72rem 0.95rem;
+  font-weight: 800;
+  cursor:pointer;
+  transition: transform 0.16s ease, background 0.18s ease, border-color 0.18s ease;
+}
+.glassBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
+
+.glassBtn--ghost{ background: rgba(255,255,255,0.03); }
+.glassBtn--danger{
+  border-color: rgba(239,68,68,0.28);
+  background: rgba(239,68,68,0.14);
+  color: rgba(255,220,220,0.95);
+}
+
+/* Alerts modal layout */
+.alertBuilder{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 900px){
+  .alertBuilder{ grid-template-columns: 1fr; }
+}
+
+.alertList{
+  display:flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.alertRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 0.85rem;
+
+  padding: 0.8rem 0.85rem;
+  border-radius: 1.05rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* ---------- Inline Mute panel (inside Alerts modal) ---------- */
+
+.mutePanel{
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  margin-top: 0.95rem;
+  padding: 0.95rem 1rem;
+
+  border-radius: 1.15rem;
+  background: rgba(12, 14, 22, 0.62); /* slightly lighter than modal */
+  border: 1px solid rgba(255,255,255,0.10);
+
+  box-shadow:
+    0 18px 55px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* rim highlight */
+.mutePanel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding:1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.34),
+    rgba(255,255,255,0.08) 35%,
+    rgba(255,255,255,0.16) 65%,
+    rgba(255,255,255,0.26)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events:none;
+}
+
+/* red/blue glow blob inside panel (same vibe as your modals) */
+.mutePanel__bgBlob{
+  position:absolute;
+  inset:-40px;
+  pointer-events:none;
+  z-index: 0;
+  background:
+    radial-gradient(520px 320px at 18% 35%, rgba(100,170,255,0.22), transparent 60%),
+    radial-gradient(560px 360px at 82% 40%, rgba(255,90,120,0.22), transparent 60%),
+    radial-gradient(520px 340px at 55% 110%, rgba(255,255,255,0.08), transparent 70%);
+  filter: blur(12px) saturate(1.15);
+  opacity: 0.95;
+}
+
+/* content above blob */
+.mutePanel > *:not(.mutePanel__bgBlob){
+  position: relative;
+  z-index: 1;
+}
+
+.mutePanel__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.mutePanel__title{
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: rgba(255,255,255,0.95);
+}
+
+.mutePanel__subtitle{
+  color: rgba(255,255,255,0.70);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+}
+
+.mutePanel__close{
+  border:none;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.85);
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  cursor:pointer;
+  line-height: 0;
+}
+
+
+.alertRow__title{ display:flex; flex-wrap:wrap; gap:0.45rem; align-items:center; }
+.alertRow__meta{ color: rgba(255,255,255,0.62); font-size:0.88rem; margin-top:0.25rem; }
+
+.alertTag{
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.alertTag--soft{ background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+
+.alertRow__actions{
+  display:flex;
+  gap:0.55rem;
+  align-items:center;
+}
+
+/* --- Toast stack (bottom-right) --- */
+.toastStack{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 15000; /* ✅ above auth bar too */
+  display:flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(440px, 92vw);
+}
+
+.toast{
+  position: relative;
+  isolation: isolate;
+
+  border-radius: 1.15rem;
+  padding: 0.9rem 0.95rem;
+  background: rgba(12, 14, 22, 0.78);
+  border: 1px solid rgba(255,255,255,0.10);
+
+  box-shadow: 0 22px 70px rgba(0,0,0,0.65);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+
+.toast::before{
+  content:"";
+  position:absolute; inset:0;
+  padding:1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.34), rgba(255,255,255,0.08) 35%, rgba(255,255,255,0.16) 65%, rgba(255,255,255,0.26));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity:0.55;
+  pointer-events:none;
+}
+
+.toast__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.toast__kicker{
+  font-size:0.72rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color: rgba(255,255,255,0.62);
+}
+
+.toast__title{
+  display:block;
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  line-height: 1.08;
+  color: rgba(255,255,255,0.95);
+  text-decoration:none;
+  margin-bottom: 0.35rem;
+}
+.toast__title:hover{ text-decoration: underline; }
+
+.toast__summary{
+  color: rgba(255,255,255,0.72);
+  font-size:0.92rem;
+  line-height:1.55;
+}
+
+.toast__actions{ display:flex; gap:0.5rem; }
+
+.toastBtn{
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.92);
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  font-weight: 800;
+  cursor:pointer;
+  transition: transform 0.16s ease, background 0.18s ease;
+}
+.toastBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+.toastBtn--ghost{ background: rgba(255,255,255,0.03); }
+
+/* ---------- Alert Toast (sexy glass + blob) ---------- */
+
+.alertToast {
+  position: relative;
+  width: 420px;
+  max-width: calc(100vw - 24px);
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+
+  background: rgba(16, 18, 26, 0.82); /* less transparent */
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  overflow: hidden;
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 340ms ease, opacity 340ms ease;
+}
+
+.alertToast.is-leaving {
+  transform: translateX(60px);
+  opacity: 0;
+}
+
+.alertToast__bgBlob {
+  position: absolute;
+  inset: -40px;
+  background:
+    radial-gradient(120px 120px at 20% 25%, rgba(59, 130, 246, 0.50), transparent 60%),
+    radial-gradient(140px 140px at 82% 18%, rgba(239, 68, 68, 0.45), transparent 60%),
+    radial-gradient(120px 120px at 70% 90%, rgba(99, 102, 241, 0.25), transparent 65%);
+  filter: blur(18px);
+  opacity: 0.80;
+  pointer-events: none;
+}
+
+.alertToast__top {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.alertToast__kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  color: rgba(255,255,255,0.86);
+}
+
+.alertToast__kickerLabel {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.alertToast__kickerSource {
+  font-size: 12px;
+  font-weight: 650;
+  opacity: 0.95;
+}
+
+.alertToast__pill {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.alertToast__pill--soft {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.18);
+}
+
+.alertToast__close {
+  border: none;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.85);
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.alertToast__title {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.96);
+  text-decoration: none;
+}
+
+.alertToast__title:hover { text-decoration: underline; }
+
+.alertToast__summary {
+  position: relative;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.82);
+}
+
+.alertToast__impactRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.alertToast__impactLabel {
+  font-size: 12px;
+  opacity: 0.80;
+}
+
+.toastImpactChip {
+  font-size: 12px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+}
+
+.toastImpactChip--neg { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.20); }
+.toastImpactChip--pos { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.20); }
+.toastImpactChip--neu { background: rgba(59,130,246,0.10); border-color: rgba(59,130,246,0.18); }
+.toastImpactChip--muted { opacity: 0.75; }
+
+.alertToast__impactStatus {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.alertToast__spacer { flex: 1; }
+
+.alertToast__btn {
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.92);
+  padding: 7px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.alertToast__btn--primary {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(59, 130, 246, 0.30);
+}
+
+.whatsnew__actions--stack {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+
+/* ---------- WhatsNew action buttons (glassy + dual blob) ---------- */
+
+.whatsActionBtn{
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  border-radius: 999px;
+  padding: 0.56rem 0.9rem;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.028);
+  color: rgba(255,255,255,0.92);
+
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 14px 40px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(255,255,255,0.03) inset;
+
+  backdrop-filter: blur(16px) saturate(115%);
+  -webkit-backdrop-filter: blur(16px) saturate(115%);
+
+  transition:
+    transform 0.16s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+/* rim highlight like your other glass components */
+.whatsActionBtn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding:1px;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.22),
+    rgba(255,255,255,0.06) 45%,
+    rgba(255,255,255,0.14)
+  );
+
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0.28;
+  pointer-events:none;
+  z-index: 2;
+}
+
+/* blue-left + red-right blobs INSIDE the button */
+.whatsActionBtn::after{
+  content:"";
+  position:absolute;
+  inset:-44px;
+  border-radius: inherit;
+  pointer-events:none;
+  z-index: 0;
+
+  /* Edge-only tint, stronger but still premium */
+  background:
+    radial-gradient(190px 86px at 6% 50%, rgba(90,150,255,0.28), transparent 68%),
+    radial-gradient(210px 92px at 94% 50%, rgba(255,85,120,0.34), transparent 64%);
+
+  filter: blur(20px) saturate(1.12);
+  opacity: 0.70;
+}
+
+
+/* make sure text stays above blobs */
+.whatsActionBtn > *{
+  position: relative;
+  z-index: 3;
+}
+
+.whatsActionBtn:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.065);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow:
+    0 16px 42px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.06) inset;
+}
+
+.whatsActionBtn:hover::before{
+  opacity: 0.72;
+}
+
+.whatsActionBtn:hover::after{
+  opacity: 0.85;
+  filter: blur(18px) saturate(1.18);
+}
+
+
+.whatsActionBtn:active{
+  transform: translateY(0px);
+  filter: brightness(0.98);
+}
+
+/* ❌ no more "ew blue button" — keep same glass, just slightly stronger */
+.whatsActionBtn--primary{
+  background: rgba(255,255,255,0.038);
+  border-color: rgba(255,255,255,0.22);
+}
+
+
+/* optional: tiny “pulse” when hovered (very subtle) */
+@keyframes whatsBlobDrift{
+  0%   { transform: translate(-2px, 0px) scale(1); }
+  50%  { transform: translate(2px, -1px) scale(1.02); }
+  100% { transform: translate(-2px, 0px) scale(1); }
+}
+
+/* ===========================
+   Sexy section headers (Apple News + glass)
+   Used by: WhatsNew + Feed title
+=========================== */
+
+.sectionHead,
+.feedHead{
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.sectionHead__kicker,
+.feedHead__kicker{
+  align-self: flex-start;
+  font-size: 0.70rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.70);
+
+  padding: 0.28rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+
+  box-shadow:
+    0 14px 42px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(255,255,255,0.03) inset;
+}
+
+/* Title */
+.sectionHead__title,
+.feedHead__title{
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.02;
+  color: rgba(255,255,255,0.96);
+}
+
+/* Sizes tuned to your UI */
+.sectionHead__title{ font-size: 1.65rem; }
+.feedHead__title{ font-size: 2.25rem; }
+
+/* Subline */
+.sectionHead__sub,
+.feedHead__sub{
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.62);
+  max-width: 36rem;
+}
+
+/* Gradient underline “editorial” */
+.sectionHead__title,
+.feedHead__title{
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.55rem;
+}
+
+.sectionHead__title::after,
+.feedHead__title::after{
+  content:"";
+  position:absolute;
+  left: 0;
+  bottom: 0.10rem;
+  width: 92%;
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,85,120,0.00),
+    rgba(255,85,120,0.65),
+    rgba(255,255,255,0.55),
+    rgba(90,150,255,0.70),
+    rgba(90,150,255,0.00)
+  );
+
+  filter: blur(0.2px);
+  opacity: 0.85;
+}
+
+/* Subtle glow behind the title (edge-y, not loud) */
+.sectionHead::before,
+.feedHead::before{
+  content:"";
+  position:absolute;
+  inset: -22px -26px -18px -26px;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    radial-gradient(220px 110px at 10% 55%, rgba(255,85,120,0.18), transparent 65%),
+    radial-gradient(260px 120px at 90% 55%, rgba(90,150,255,0.16), transparent 65%),
+    radial-gradient(240px 130px at 55% 110%, rgba(255,255,255,0.08), transparent 70%);
+
+  filter: blur(18px) saturate(1.10);
+  opacity: 0.95;
+}
+
+/* tiny sparkle */
+.sectionHead__spark{
+  display: inline-block;
+  margin-left: 0.28rem;
+  opacity: 0.65;
+  transform: translateY(-1px);
+}
+
+/* Make feed header layout nicer with your existing controls */
+.app__feed-header{
+  align-items: flex-end;          /* was baseline */
+  gap: 0.9rem;
+}
+
+.feed-controls{
+  margin-top: 0.35rem;
+}
+
+/* Mobile: keep it tight */
+@media (max-width: 640px){
+  .feedHead__title{ font-size: 1.85rem; }
+  .sectionHead__title{ font-size: 1.40rem; }
+  .sectionHead__sub, .feedHead__sub{ display: none; } /* optional: remove if you want */
+}
+
+/* ===========================
+   Section header spacing polish
+   (more breathing room between kicker -> title -> sub)
+=========================== */
+
+/* was: gap: 0.22rem; */
+.sectionHead,
+.feedHead{
+  gap: 0.50rem;
+}
+
+/* was: padding-bottom: 0.55rem; */
+.sectionHead__title,
+.feedHead__title{
+  padding-bottom: 0.70rem;
+}
+
+/* add a touch more separation from the underline */
+.sectionHead__sub,
+.feedHead__sub{
+  margin-top: 0.10rem;
+}
+
+/* =========================================================
+   RESPONSIVE LAYER (paste at very bottom of App.css)
+   ========================================================= */
+
+/* ---------- Fluid gutter + type scale ---------- */
+:root{
+  --gutter: clamp(14px, 3.5vw, 24px);
+  --header-top-pad: clamp(4.5rem, 10vw, 5.2rem);
+  --title-size: clamp(2.15rem, 6.5vw, 4rem);
+  --feed-title-size: clamp(1.75rem, 4.2vw, 2.25rem);
+}
+
+/* Keep the main container always centered and never “too narrow” */
+.app{
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* Header should align with .app gutters (avoid double padding) */
+.app__header{
+  padding-top: var(--header-top-pad);
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Inner header content matches the app width */
+.app__header-inner{
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* Title scales nicely across devices */
+.app__title{
+  font-size: var(--title-size);
+}
+
+/* Feed title scales */
+.feedHead__title{
+  font-size: var(--feed-title-size);
+}
+
+/* Logo scales a bit on tiny screens */
+.app__logo{
+  width: clamp(44px, 12vw, 54px);
+  height: clamp(32px, 8vw, 38px);
+}
+
+/* Tagline: keep comfy line length on wide screens, full width on small */
+.app__tagline--glass{
+  font-size: clamp(1.02rem, 2.6vw, 1.34rem);
+  line-height: clamp(1.55, 1.6vw, 1.8);
+}
+
+/* ---------- Make top overlay elements “safe” ---------- */
+
+/* Live pill: never hang off-screen on small widths */
+.livePill{
+  left: calc(var(--gutter) * -1 + 0px); /* cancels the app padding neatly */
+  padding-left: calc(var(--gutter) + 1rem);
+  max-width: min(560px, calc(100vw - 220px));
+}
+
+/* Auth bar: keep it readable and avoid overlap */
+.app__authbar{
+  top: 14px;
+  right: var(--gutter);
+}
+
+/* ---------- Feed header layout ---------- */
+/* Desktop/tablet: title left, controls right, count on its own line */
+.app__feed-header{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "head controls"
+    "count controls";
+  align-items: end;
+  column-gap: 1rem;
+  row-gap: 0.55rem;
+}
+
+.app__feed-header .feedHead{ grid-area: head; }
+.app__feed-header .feed-controls{ grid-area: controls; }
+.app__feed-header .app__feed-count{
+  grid-area: count;
+  justify-self: start;
+  align-self: start;
+  opacity: 0.9;
+}
+
+/* Controls: avoid squeezing, wrap like a neat “chip row” */
+.feed-controls{
+  justify-content: flex-end;
+  margin: 0;
+  gap: 0.55rem;
+}
+
+/* Each control pill should be allowed to wrap without breaking */
+.feed-controls__field{
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+/* Dates: allow wrapping the two inputs on tight widths */
+.feed-controls__dates{
+  flex-wrap: wrap;
+}
+
+/* ---------- Pagination: prevent crush on tiny screens ---------- */
+.pagination{
+  gap: 0.5rem;
+}
+
+.pagination__pages{
+  max-width: 100%;
+}
+
+/* On very small widths, allow horizontal scroll instead of shrinking to unreadable */
+@media (max-width: 380px){
+  .pagination__pages{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+}
+
+/* ---------- Toasts: bottom-center on phones ---------- */
+@media (max-width: 640px){
+  .toastStack{
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: 12px;
+    width: min(440px, calc(100vw - 18px));
+  }
+}
+
+/* =========================================================
+   BREAKPOINTS tuned to common DevTools devices
+   (360 / 375 / 390 / 414 / 768 / 900+)
+   ========================================================= */
+
+/* Small phones (Galaxy S8+, iPhone SE range) */
+@media (max-width: 420px){
+  .app{
+    padding-top: 2rem;
+    padding-bottom: 2.25rem;
+  }
+
+  /* Give header more breathing room under overlays */
+  .app__header{
+    padding-top: clamp(6.0rem, 16vw, 6.8rem);
+  }
+
+  /* Live pill becomes normal inset (no negative offset tricks) */
+  .livePill{
+    left: var(--gutter);
+    padding-left: 1rem;
+    max-width: calc(100vw - 150px);
+  }
+
+  /* Auth chip: stop being too wide */
+  .app__authchip{
+    max-width: 200px;
+  }
+
+  /* Feed header becomes vertical */
+  .app__feed-header{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "controls"
+      "count";
+    align-items: start;
+  }
+
+  .feed-controls{
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  /* Controls behave like a small grid */
+  .feed-controls__field{
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Date inputs don’t overflow */
+  .feed-controls__date{
+    min-width: 0;
+    width: 100%;
+  }
+
+  .feed-controls__dates{
+    width: 100%;
+  }
+
+  /* Tabs: slightly tighter */
+  .tabs{ gap: 0.5rem; }
+  .tab{ padding: 0.5rem 0.95rem; }
+}
+
+/* Medium phones (iPhone XR 414, iPhone 12/14) */
+@media (min-width: 421px) and (max-width: 680px){
+  .app__header{
+    padding-top: clamp(5.8rem, 13vw, 6.4rem);
+  }
+
+  .app__feed-header{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "controls"
+      "count";
+  }
+
+  .feed-controls{
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .feed-controls__field{
+    width: auto;
+  }
+}
+
+/* Tablets (iPad mini/air/pro) */
+@media (min-width: 681px) and (max-width: 980px){
+  .app__feed-header{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "controls"
+      "count";
+  }
+
+  .feed-controls{
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Desktop: keep your original intentions */
+@media (min-width: 981px){
+  .livePill{
+    max-width: min(560px, calc(100vw - 260px));
+  }
+}
+
+/* --- overflow + sizing safety net --- */
+*, *::before, *::after { box-sizing: border-box; }
+img, svg { max-width: 100%; height: auto; }
+
+/* =========================================================
+   TOPBAR FIX (tablet/foldable safe)
+   - <=1100px: topbar becomes FLOW with proper spacing (no collisions)
+   - >1100px: topbar stays ABSOLUTE like desktop
+   - mobile design unaffected
+   ========================================================= */
+
+:root{
+  --safeTop: env(safe-area-inset-top, 0px);
+  --overlayTop: calc(12px + var(--safeTop));
+}
+
+/* keep overlays stable */
+.livePill{ top: var(--overlayTop) !important; }
+.app__authbar{ top: var(--overlayTop) !important; }
+
+/* -----------------------------
+   TABLETS / FOLDABLES / HUB
+   (<= 1100px) — make it FLOW
+------------------------------ */
+@media (max-width: 1100px){
+
+  /* ensure header starts below overlays */
+  .app__header{
+    padding-top: calc(var(--overlayTop) + 3.10rem) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* FLOW topbar (no absolute collisions) */
+  .app__topbar{
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    width: 100% !important;
+    justify-content: center !important;
+
+    /* ✅ push it UP, but keep breathing room */
+    margin-top: -0.95rem !important;
+    margin-bottom: 1.10rem !important;
+  }
+
+  /* keep the glass from overflowing on narrow tablets */
+  .topbarGlass{
+    max-width: calc(100vw - (var(--gutter) * 2)) !important;
+  }
+}
+
+/* -----------------------------
+   PHONES (<= 640px)
+   Slightly less aggressive lift (keep your mobile feel)
+------------------------------ */
+@media (max-width: 640px){
+  .app__topbar{
+    margin-top: -0.25rem !important;
+    margin-bottom: 0.90rem !important;
+  }
+}
+
+/* -----------------------------
+   DESKTOP (> 1100px)
+   Back to absolute like your original intent
+------------------------------ */
+@media (min-width: 1101px){
+  .app__topbar{
+    position: absolute !important;
+    top: -2.15rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    width: auto !important;
+    margin: 0 !important;
+  }
+}
+
+/* =========================================================
+   MOBILE ONLY (phones)
+   Fix overlap between livePill (left) and authbar (right)
+   ========================================================= */
+@media (max-width: 680px){
+
+  :root{
+    /* Reserve enough space for: [Login] [Sign up] + gap + padding variance */
+    --auth-reserve: clamp(200px, 52vw, 280px);
+  }
+
+  .app__authbar{
+    right: var(--gutter) !important;
+    top: var(--overlayTop) !important; /* keep aligned with your safe-area logic */
+  }
+
+  .livePill{
+    top: var(--overlayTop) !important;
+
+    /* lock pill inside safe content gutter */
+    left: var(--gutter) !important;
+
+    /* HARD boundary: livePill may NOT enter authbar zone */
+    right: calc(var(--gutter) + var(--auth-reserve)) !important;
+
+    /* when left+right are set, let it size within that box */
+    max-width: none !important;
+  }
+}
+
+/* =========================================================
+   MOBILE ONLY — fix live pill sizing/wrapping + no collisions
+   (phones)
+   ========================================================= */
+@media (max-width: 680px){
+
+  :root{
+    /* reserve space for Login + Sign up on the right */
+    --auth-reserve: clamp(200px, 52vw, 280px);
+    --pill-gap: 10px;
+  }
+
+  /* Ensure header content starts BELOW the overlay row
+     so live pill/auth buttons never hit the "Made by" box */
+  .app__header{
+    padding-top: calc(var(--overlayTop) + 3.8rem) !important;
+  }
+
+  /* Put the Made-by topbar in normal flow with a clean gap */
+  .app__topbar{
+    margin-top: 0.15rem !important;   /* stop pulling it up into the overlays */
+    margin-bottom: 0.85rem !important;
+  }
+
+  /* Keep auth buttons pinned top-right */
+  .app__authbar{
+    top: var(--overlayTop) !important;
+    right: var(--gutter) !important;
+  }
+
+  /* ---- Live pill: bounded, rectangular, multi-line ---- */
+  .livePill{
+    top: var(--overlayTop) !important;
+    left: var(--gutter) !important;
+
+    /* HARD boundary: never enter auth zone */
+    right: calc(var(--gutter) + var(--auth-reserve)) !important;
+    max-width: none !important;
+    width: auto !important;
+
+    /* Make it look like a proper pill (rounded ends, not a circle) */
+    border-radius: 999px !important;
+
+    /* Better mobile padding */
+    padding: 0.55rem 0.75rem !important;
+
+    /* Prevent “hilarious” shrinking */
+    min-height: 44px;
+    min-width: 160px;
+
+    /* Layout that wraps cleanly */
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    align-items: center !important;
+    column-gap: 0.6rem !important;
+
+    /* avoid any clipping */
+    overflow: hidden !important;
+  }
+
+  .liveDots{
+    margin: 0 !important;
+    align-self: center !important;
+  }
+
+  .liveText{
+    /* allow wrapping (no cutoff) */
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+
+    /* clean multi-line */
+    line-height: 1.15 !important;
+    font-size: 0.76rem !important;
+
+    /* prevent long words from breaking the pill */
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+
+    /* optional: keeps it from becoming super tall on tiny phones */
+    max-width: 28ch;
+  }
+
+  /* Extra-tight phones (Galaxy S8-ish) */
+  @media (max-width: 420px){
+    .livePill{
+      min-width: 150px;
+      padding: 0.52rem 0.68rem !important;
+      column-gap: 0.55rem !important;
+    }
+    .liveText{
+      font-size: 0.74rem !important;
+      max-width: 26ch;
+    }
+  }
+}
+
+/* =========================================================
+   TABLETS / FOLDABLES / HUB
+   Reduce gap: overlays ↔ Made-by topbar
+   (iPad mini / Air / Pro, Surface Pro 7, Zenbook Fold, Nest Hub)
+   ========================================================= */
+@media (min-width: 681px) and (max-width: 1100px){
+
+  /* Header starts a bit closer to the overlay row */
+  .app__header{
+    padding-top: calc(var(--overlayTop) + 2.55rem) !important;
+  }
+
+  /* Pull the Made-by box UP slightly */
+  .app__topbar{
+    margin-top: -1.75rem !important;   /* was -0.95rem */
+    margin-bottom: 0.85rem !important; /* was 1.10rem */
+  }
+}
+
+/* =========================================================
+   TABLETS / FOLDABLES / HUB ONLY
+   Fix: livePill left edge gets clipped
+   (iPad mini/air/pro, Surface Pro 7, Zenbook Fold, Nest Hub)
+   ========================================================= */
+@media (min-width: 681px) and (max-width: 1100px){
+  .livePill{
+    /* keep it inside the viewport so overflow-x:hidden can't clip it */
+    left: clamp(12px, var(--gutter), 24px) !important;
+
+    /* undo the “pulled left past padding” trick */
+    padding-left: 1rem !important;
+
+    /* keep sizing sane on these widths */
+    max-width: min(560px, calc(100vw - 240px)) !important;
+  }
+}
+
+/* =========================================================
+   FULL-WIDTH "LASER" UNDERLINES
+   - WhatsNew header (under "What's new")
+   - Feed header (under "White House")
+   Scoped so it won't affect other components
+   ========================================================= */
+
+/* ---------- WhatsNew: full-width underline above cards ---------- */
+.whatsnew__header{
+  position: relative;
+  padding-bottom: 0.75rem; /* room for the underline */
+}
+
+.whatsnew__header::after{
+  content:"";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.15rem;
+
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,85,120,0.00),
+    rgba(255,85,120,0.65),
+    rgba(255,255,255,0.55),
+    rgba(90,150,255,0.70),
+    rgba(90,150,255,0.00)
+  );
+
+  filter: blur(0.2px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* disable the title-based underline ONLY inside WhatsNew */
+.whatsnew .sectionHead__title::after{
+  display: none !important;
+}
+
+
+/* ---------- Feed: full-width underline across title + controls ---------- */
+.app__feed-header{
+  position: relative;
+  padding-bottom: 0.85rem; /* room for the underline */
+}
+
+.app__feed-header::after{
+  content:"";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.18rem;
+
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,85,120,0.00),
+    rgba(255,85,120,0.65),
+    rgba(255,255,255,0.55),
+    rgba(90,150,255,0.70),
+    rgba(90,150,255,0.00)
+  );
+
+  filter: blur(0.2px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* disable the title-based underline ONLY in the feed header */
+.app__feed-header .feedHead__title::after{
+  display: none !important;
+}
+
+/* =========================================================
+   FEED HEADER TEXT FIX (desktop + iPad + mobile)
+   - Prevent "Policy feed" / "White House" / sub sentence from collapsing
+   - Keep kicker/title on one line (ellipsis if needed)
+   - Ensure sub sentence is ALWAYS visible on mobile
+   Scoped ONLY to .app__feed-header
+   ========================================================= */
+
+/* Make the grid column truly shrinkable (prevents min-content crushing) */
+.app__feed-header{
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+/* Let the head area actually take space and not collapse to ~100px */
+.app__feed-header .feedHead{
+  width: 100%;
+  min-width: 0;              /* KEY: allows proper wrapping/space distribution */
+  display: flex;              /* override inline-flex shrink behavior */
+  flex-direction: column;
+}
+
+/* Sub sentence: should wrap normally (not word-per-line), and never disappear */
+.app__feed-header .feedHead__sub{
+  display: block;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: 42rem;          /* keeps nice reading line length */
+  overflow-wrap: break-word; /* normal wrap without "one word per line" */
+  word-break: normal;
+}
+
+/* Mobile override: your earlier CSS hides .feedHead__sub — force it back on */
+@media (max-width: 640px){
+  .app__feed-header .feedHead__sub{
+    display: block !important;
+  }
+}
+
+/* =========================================================
+   FINAL FEED HEADER FIX (tablets + desktops)
+   Prevent head column collapse (vertical letters) + remove "Whit..."
+   Paste at VERY BOTTOM of App.css
+========================================================= */
+
+/* 1) Make the grid resilient: BOTH columns can shrink */
+.app__feed-header{
+  display: grid !important;
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 1fr) !important;
+  grid-template-areas:
+    "head controls"
+    "count controls" !important;
+
+  column-gap: 1rem !important;
+  row-gap: 0.55rem !important;
+
+  align-items: end !important;
+}
+
+/* 2) Head must never become 70px wide */
+.app__feed-header .feedHead{
+  grid-area: head !important;
+  min-width: 280px !important;   /* <-- KEY: stops vertical letter wrap */
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* 3) Controls must be allowed to WRAP and shrink (not force head to collapse) */
+.app__feed-header .feed-controls{
+  grid-area: controls !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: 0.55rem !important;
+  margin: 0 !important;
+}
+
+/* Each control pill must be shrinkable */
+.app__feed-header .feed-controls__field{
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* 4) Fix the "Whit..." — allow title to show fully (wrap nicely if needed) */
+.app__feed-header .feedHead__kicker,
+.app__feed-header .feedHead__title{
+  white-space: normal !important;      /* was nowrap causing ellipsis */
+  overflow: visible !important;
+  text-overflow: unset !important;
+
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+/* 5) Subline should wrap normally, not word-per-line */
+.app__feed-header .feedHead__sub{
+  display: block !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+
+  max-width: 52rem !important;
+}
+
+/* 6) Count stays under title */
+.app__feed-header .app__feed-count{
+  grid-area: count !important;
+  justify-self: start !important;
+  align-self: start !important;
+}
+
+/* ---------------------------------------------------------
+   TABLETS / MID WIDTHS: stack to 1 column (prevents crush)
+--------------------------------------------------------- */
+@media (max-width: 1100px){
+  .app__feed-header{
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "head"
+      "controls"
+      "count" !important;
+    align-items: start !important;
+  }
+
+  .app__feed-header .feedHead{
+    min-width: 0 !important; /* allow natural width */
+  }
+
+  .app__feed-header .feed-controls{
+    justify-content: flex-start !important;
+    width: 100% !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   SMALL PHONES: keep your subline visible (you wanted this)
+--------------------------------------------------------- */
+@media (max-width: 640px){
+  .app__feed-header .feedHead__sub{
+    display: block !important;
+  }
+}
+
+/* =========================================================
+   FIX: Reduce gap between WhatsNew carousel and Policy Feed
+   - Keep roomy padding inside carousel for hover (top/left/right)
+   - Reduce ONLY the space AFTER the largest WhatsNew card
+   - Consistent across devices via clamp()
+========================================================= */
+
+:root{
+  /* space AFTER WhatsNew (before feed header) */
+  --wn-to-feed-gap: clamp(0.65rem, 1.8vw, 1.05rem);
+
+  /* carousel padding: keep hover-safe on top/sides, reduce bottom */
+  --wn-pad-top: 8px;
+  --wn-pad-x: 8px;
+  --wn-pad-bottom: clamp(2px, 0.6vw, 6px);
+}
+
+/* reduce section bottom spacing (this is the main gap you’re seeing) */
+.whatsnew{
+  margin: 1.1rem 0 var(--wn-to-feed-gap) !important;
+}
+
+/* keep top/sides roomy, shrink ONLY the bottom padding */
+.whatsnew__viewport{
+  padding: var(--wn-pad-top) var(--wn-pad-x) var(--wn-pad-bottom) !important;
+}
+
+/* just in case any default margins sneak in at the boundary */
+.whatsnew > *:last-child{
+  margin-bottom: 0 !important;
+}
+
+/* phones: slightly tighter still */
+@media (max-width: 680px){
+  :root{
+    --wn-to-feed-gap: clamp(0.55rem, 2.2vw, 0.85rem);
+    --wn-pad-bottom: 2px;
+  }
+}
+
+/* =========================================================
+   MOBILE OVERLAYS — single source of truth
+   Fix livePill ↔ auth overlap across phones
+========================================================= */
+@media (max-width: 680px){
+  :root{
+    --overlay-gap-y: 16px;
+    --pill-gap-x: 16px;
+
+    /* SIGNED-IN worst case: chip + delete + logout (stacked) */
+    --auth-reserve: clamp(250px, 66vw, 380px);
+  }
+
+  .app__header{
+    padding-top: calc(var(--overlayTop) + 4.6rem) !important;
+  }
+
+  .app__authbar{
+    top: var(--overlayTop) !important;
+    right: var(--gutter) !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.45rem !important;
+  }
+
+  .app__authchip{
+    max-width: 200px !important; /* reduce width pressure */
+  }
+
+  .livePill{
+    top: var(--overlayTop) !important;
+    left: var(--gutter) !important;
+
+    right: calc(var(--gutter) + var(--auth-reserve) + var(--pill-gap-x)) !important;
+    max-width: none !important;
+  }
+
+  .app__topbar{
+    margin-top: var(--overlay-gap-y) !important;
+    margin-bottom: 0.95rem !important;
+  }
+}
+
+/* extra-tight devices */
+@media (max-width: 420px){
+  :root{
+    --pill-gap-x: 18px;
+    --auth-reserve: clamp(270px, 72vw, 410px);
+  }
+}
+/* =========================================================
+   OVERLAP FIX — ONLY for the devices in your screenshots
+   Galaxy S8+ (360x740), iPhone 12 Pro (390x844), iPhone SE (375x667)
+   Paste at VERY BOTTOM of App.css
+========================================================= */
+@media (max-width: 400px) {
+
+  :root{
+    --safeTop: env(safe-area-inset-top, 0px);
+    --overlayTop: calc(12px + var(--safeTop));
+
+    /* right-side reserved column for signed-in stack */
+    --authCol: 185px;
+
+    /* vertical space to keep Made-by from colliding with auth/live */
+    --overlayRowH: 85px;
+  }
+
+  /* 1) Make the header start BELOW the overlay row */
+  .app__header{
+    padding-top: calc(var(--overlayTop) + var(--overlayRowH)) !important;
+  }
+
+  /* 2) Auth: force a tight right column */
+  .app__authbar{
+    top: var(--overlayTop) !important;
+    right: var(--gutter) !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+
+    gap: 0.40rem !important;
+    max-width: var(--authCol) !important;
+  }
+
+  .app__authchip{
+    max-width: var(--authCol) !important;
+  }
+
+  /* 3) Live pill: keep it in the left lane and never enter auth lane */
+  .livePill{
+    top: var(--overlayTop) !important;
+    left: var(--gutter) !important;
+
+    /* HARD boundary: cannot cross into auth column */
+    right: calc(var(--gutter) + var(--authCol) + 10px) !important;
+
+    max-width: none !important;
+    width: auto !important;
+
+    /* ensure it stays pill-shaped (not a circle) */
+    min-height: 44px !important;
+    border-radius: 999px !important;
+  }
+
+  .liveText{
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* 4) Made-by topbar: NEVER pull upward into the overlays on these phones */
+  .app__topbar{
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    width: 100% !important;
+    justify-content: center !important;
+
+    /* key: remove all “lift” behavior that causes collisions */
+    margin-top: 1.20rem !important;
+    margin-bottom: 0.95rem !important;
+  }
+}
+
+/* Extra-tight safety for Galaxy S8+ width 360 */
+@media (max-width: 365px) {
+  :root{
+    --authCol: 200px;
+    --overlayRowH: 70px;
+  }
+
+  .app__authchip{
+    max-width: 175px !important; /* shrink email chip a bit more */
+  }
+
+  .authPill{
+    padding: 0.48rem 0.75rem !important; /* slightly tighter buttons */
+    font-size: 0.84rem !important;
+  }
+
+  .app__topbar{
+  margin-top: 2.10rem !important;   /* ↓ reduce this */
+  margin-bottom: 0.95rem !important;
+  }
+
+}
+
+/* =========================================================
+   ULTRA-NARROW PHONES (Galaxy Z Fold 5 outer width ~344px)
+   Push livePill LEFT + auth stack RIGHT without affecting other sizes
+   Paste at VERY BOTTOM of App.css
+========================================================= */
+@media (max-width: 345px){
+
+  :root{
+    /* tighter edge inset ONLY for these widths */
+    --edgeInset: 6px;
+
+    /* reserve a slightly smaller auth column so lanes don't collide */
+    --authColFold: 170px;
+
+    /* extra breathing room between the two lanes */
+    --laneGap: 16px;
+  }
+
+  /* auth: move closer to the right edge */
+  .app__authbar{
+    right: var(--edgeInset) !important;
+    max-width: var(--authColFold) !important;
+  }
+
+  .app__authchip{
+    max-width: var(--authColFold) !important;
+  }
+
+  /* live pill: move closer to the left edge + respect a harder boundary */
+  .livePill{
+    left: var(--edgeInset) !important;
+
+    /* hard boundary: cannot enter auth column + gap */
+    right: calc(var(--edgeInset) + var(--authColFold) + var(--laneGap)) !important;
+
+    max-width: none !important;
+    width: auto !important;
+  }
+}
+
+/* =========================================================
+   AUTH MODAL ALIGNMENT FIX — MOBILE PHONES ONLY
+   Fix uneven left/right padding on Login / Sign up modal
+   (iPhone 16/17 range + S20 Ultra down to Fold outer widths)
+========================================================= */
+@media (max-width: 450px) and (pointer: coarse) {
+  .authOverlay {
+    /* enforce truly even gutters on both sides */
+    padding-left: max(14px, env(safe-area-inset-left, 0px));
+    padding-right: max(14px, env(safe-area-inset-right, 0px));
+    padding-top: max(14px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+
+    /* keep centering deterministic */
+    display: grid;
+    place-items: center;
+  }
+
+  .authModal {
+    /* stop 95vw from fighting overlay padding and “shifting” */
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+    box-sizing: border-box;
+  }
+}
+
+/* =========================================================
+   AUTH MODAL — MOBILE PHONES ONLY
+   Fix uneven left/right padding on BOTH Login + Sign up
+========================================================= */
+@media (max-width: 480px) {
+  .authOverlay{
+    /* equal gutters + safe-area support */
+    padding-left: max(14px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(14px, env(safe-area-inset-right, 0px)) !important;
+    padding-top: max(14px, env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 0px)) !important;
+
+    /* stable centering */
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  .authModal{
+    /* overlay padding becomes the gutter; modal takes full available width */
+    width: 100% !important;
+    max-width: 520px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* =========================================================
+   FIX: iPad Mini / iPad Air / Asus Zenbook Fold ONLY
+   Problem: auth chip touches "Made by" topbar
+   Solution: reduce the topbar negative lift ONLY on these sizes
+========================================================= */
+@media (min-width: 740px) and (max-width: 900px) and (min-height: 1000px) {
+
+  /* Make the "Made by" topbar sit a bit LOWER so it clears the auth chip */
+  .app__topbar{
+    margin-top: 0.50rem !important;   /* was -1.75rem in your tablet block */
+    margin-bottom: 1.95rem !important; /* keep your existing rhythm */
+  }
+}
+
+/* =========================================================
+   MOBILE ONLY — FIX "WHAT'S NEW" CAROUSEL
+   - Dots always visible
+   - Cards are full-width, aligned, no peeking/splitting
+   - Good left/right padding on all phones (iPhone -> narrow Galaxy)
+   Scoped ONLY to .whatsnew
+========================================================= */
+@media (max-width: 680px){
+
+  /* Use a real mobile gutter for this section only */
+  :root{
+    --wn-mobile-pad: clamp(12px, 4vw, 18px);
+  }
+
+  /* ---- Header: prevent overflow that clips dots ---- */
+  .whatsnew__header{
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  /* Allow both sides to shrink instead of overflowing off-screen */
+  .whatsnew__header > *{
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Right side should NEVER exceed viewport width */
+  .whatsnew__right{
+    width: 100%;
+    max-width: 100%;
+    align-items: flex-start; /* keeps dots/actions visible instead of pushed out */
+    gap: 10px;
+  }
+
+  /* Buttons row can wrap on tiny devices */
+  .whatsnew__actions--stack .whatsActionRow{
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  /* Dots: keep them inside the viewport, always visible */
+  .whatsnew__dots{
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+
+  /* ---- Carousel sizing: fix the "padding vs translate" mismatch ---- */
+
+  /* Keep clipping, but use symmetric mobile gutter */
+  .whatsnew__viewport{
+    overflow: hidden;
+    padding: 8px var(--wn-mobile-pad); /* good left/right breathing room */
+  }
+
+  /*
+    KEY FIX:
+    Make the track's width match the viewport's *offsetWidth* (incl padding)
+    so JS translate step === slide width.
+  */
+  .whatsnew__track{
+    width: calc(100% + (2 * var(--wn-mobile-pad)));
+    margin-left: calc(-1 * var(--wn-mobile-pad));
+    align-items: flex-start;
+  }
+
+  /*
+    Ensure each slide consumes the translate step exactly.
+    (Keep your existing styling; just enforce sizing stability.)
+  */
+  .whatsnew__card{
+    flex: 0 0 100%;
+    min-width: 100%;
+    max-width: 100%;
+    align-self: flex-start;
+  }
+}
+
+
+/* Ultra-narrow phones (Fold outer ~344px / A51-ish tight widths) */
+@media (max-width: 360px){
+  :root{
+    --wn-mobile-pad: 12px;
+  }
+
+  .whatsnew__headline{
+    font-size: 1.22rem; /* tiny tweak so titles don’t force overflow */
+  }
+
+  .whatsnew__summary{
+    font-size: 0.92rem;
+  }
+}
+
+/* =========================================================
+   MOBILE ONLY — restore "Fresh policy signals..." under What's new
+   (Scoped only to .whatsnew so nothing else changes)
+========================================================= */
+@media (max-width: 680px){
+  .whatsnew .sectionHead__sub{
+    display: block !important;     /* override the global mobile hide */
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+
+    /* nice wrapping on very narrow phones */
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+
+    /* spacing so it reads as a true subline */
+    margin-top: 0.15rem !important;
+    max-width: 100% !important;
+  }
+}
+
+/* =========================================================
+   MOBILE ONLY — Item card header overflow fixes
+   - date never escapes / never disappears
+   - pills never spill outside card
+   - source badge text never gets "crushed into a circle"
+   (ONLY phones: small width + coarse pointer)
+========================================================= */
+@media (max-width: 680px) and (pointer: coarse) {
+
+  /* Let the header wrap instead of forcing overflow */
+  .item-card__header{
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  /* SOURCE: take the full row so it can’t be squeezed into a tiny circle */
+  .item-card__source{
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+
+    /* keep text nicely inside */
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+    word-break: normal;
+
+    /* a touch tighter so it fits on narrow phones */
+    font-size: 0.84rem;
+    line-height: 1.15;
+  }
+
+  /* META ROW: becomes a full-width row below source */
+  .item-card__meta{
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.40rem 0.45rem;
+  }
+
+  /* DATE: pinned to the right INSIDE the row (never outside the card) */
+  .item-card__date{
+    margin-left: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+
+    /* prevent it from pushing things out */
+    max-width: 42%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* PILLS: never overflow card, handle long tokens like BRIEFINGS_STATEMENTS */
+  .item-card__pill,
+  .item-card__pill--soft{
+    max-width: 100%;
+    min-width: 0;
+
+    /* allow breaking long underscore tokens on tiny devices */
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    /* slightly tighter so they stay inside the card on narrow widths */
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+    padding: 0.18rem 0.50rem;
+  }
+
+  /* Extra-tight phones (Fold outer / very narrow) */
+  @media (max-width: 360px){
+    .item-card__date{
+      max-width: 48%;
+      font-size: 0.72rem;
+    }
+
+    .item-card__pill,
+    .item-card__pill--soft{
+      font-size: 0.66rem;
+      padding: 0.16rem 0.46rem;
+    }
+  }
+}
+
+/* =========================================================
+   FIX: Source badge should hug text (no extra empty space)
+   Paste at VERY BOTTOM of App.css
+========================================================= */
+@media (max-width: 680px) and (pointer: coarse) {
+
+  .item-card__source{
+    flex: 0 1 auto !important;     /* stop full-row stretching */
+    width: fit-content !important; /* hug content */
+    max-width: 100% !important;    /* safety for long names */
+    align-self: flex-start;        /* keep it left */
+    display: inline-flex !important;
+
+    /* keep your readability */
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
+/* =========================================================
+   FIX 1: ULTRA-SMALL PHONES (≈ 320 x 645)
+   Increase space between livePill and signed-in box ONLY
+========================================================= */
+@media (max-width: 340px){
+
+  :root{
+    /* widen the reserved auth lane just a bit */
+    --authColTight: 215px;
+    --laneGapTight: 18px;
+  }
+
+  .app__authbar{
+    max-width: var(--authColTight) !important;
+  }
+
+  .app__authchip{
+    max-width: var(--authColTight) !important;
+  }
+
+  .livePill{
+    /* HARD stop: never enter auth lane */
+    right: calc(var(--gutter) + var(--authColTight) + var(--laneGapTight)) !important;
+    max-width: none !important;
+  }
+}
+
+/* =========================================================
+   FIX 2: TABLETS (≈ 768 x 645)
+   Increase space between auth box and "Made by"
+========================================================= */
+@media (min-width: 740px) and (max-width: 820px){
+
+  .app__topbar{
+    margin-top: 0.75rem !important;   /* was negative / too tight */
+    margin-bottom: 1.35rem !important;
+  }
+}
+
+/* =========================================================
+   <= 320px ONLY — SCALE auth chip + live pill (tweaked)
+========================================================= */
+@media (max-width: 320px){
+
+  /* ---------- AUTH CHIP (smaller) ---------- */
+  .app__authchip{
+    max-width: 155px !important;
+    font-size: 0.72rem !important;
+    padding: 0.30rem 0.45rem !important;
+    line-height: 1.05 !important;
+  }
+
+  /* auth buttons (Logout / Delete) */
+  .authPill{
+    font-size: 0.72rem !important;
+    padding: 0.35rem 0.55rem !important;
+  }
+
+  /* ---------- LIVE PILL (narrower + taller) ---------- */
+  .livePill{
+    max-width: calc(100vw - 235px) !important; /* narrower (more separation) */
+    padding: 0.55rem 0.65rem !important;
+    min-height: 54px !important;              /* taller */
+    height: auto !important;
+  }
+
+    /* allow wrap to avoid cutoff (2 lines max) */
+    /* allow FULL wrap — no cutoff */
+  .liveText{
+    font-size: 0.74rem !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+
+    display: block !important;     /* remove line clamping */
+    overflow: visible !important;  /* let content expand */
+  }
+}
+
+/* =========================================================
+   4K ONLY — Uniform UI scale (keeps ratios, fits viewport)
+========================================================= */
+@media (min-width: 2560px) and (min-height: 1400px) {
+  :root {
+    --uiScale4k: 1.32;
+  }
+
+  .page {
+    display: block; /* ✅ safety */
+    transform: scale(var(--uiScale4k));
+    transform-origin: top center;
+
+    width: calc(100% / var(--uiScale4k));
+    margin-inline: auto; /* ✅ center */
+
+    min-height: calc(100vh / var(--uiScale4k));
+  }
+
+  .app {
+    max-width: 1400px;
+  }
+
+  html, body {
+    overflow-x: hidden;
+  }
+}
