@@ -16,12 +16,12 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
 
 ### 📥 Policy Ingestion
 
-* Continuously ingests official documents from:
+* **Continuously ingests official documents from:**
 
   * State governors’ offices
   * White House releases
   * Federal Register & agencies
-* Supports:
+* **Supports:**
 
   * Press releases
   * Executive orders
@@ -31,11 +31,11 @@ US PolicyWatch showcases real-world **full-stack engineering, async data pipelin
 
 ### 🧠 AI Summaries & Impact Analysis
 
-* Automatically generates:
+* **Automatically generates:**
 
   * Clean, readable summaries of long policy documents
   * AI‑based **impact analysis** (policy intent, affected domains, sentiment)
-* Uses LLMs with fallbacks and safe‑guards to ensure reliability
+  * Uses LLMs with fallbacks and safe‑guards to ensure reliability
 
 ### 🔔 Alerts & Monitoring
 
