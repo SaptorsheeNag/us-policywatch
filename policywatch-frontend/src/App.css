@@ -975,7 +975,7 @@ body::selection { background: rgba(90,150,255,0.25); }
 
 /* make the calendar icon visible on dark bg (Chrome/WebKit) */
 .feed-controls__date::-webkit-calendar-picker-indicator {
-  opacity: 0.75;
+  opacity: 1;
   filter: invert(1);
   cursor: pointer;
 }
@@ -4845,4 +4845,141 @@ img, svg { max-width: 100%; height: auto; }
   }
 }
 
+/* =========================================================
+   FIX: iOS / Mobile date input visibility (Safari + Chrome)
+   - Fix invisible text
+   - Force white calendar icon
+   - Preserve glass UI
+========================================================= */
 
+.feed-controls__date{
+  color: rgba(255,255,255,0.92) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
+
+  background-color: transparent !important;
+  color-scheme: dark;
+}
+
+/* WebKit internal text parts */
+.feed-controls__date::-webkit-datetime-edit,
+.feed-controls__date::-webkit-datetime-edit-text,
+.feed-controls__date::-webkit-datetime-edit-month-field,
+.feed-controls__date::-webkit-datetime-edit-day-field,
+.feed-controls__date::-webkit-datetime-edit-year-field{
+  color: rgba(255,255,255,0.92) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   FIX: iOS / Mobile date input visibility (Safari + Chrome)
+   - Fix invisible text
+   - Keep glass UI
+========================================================= */
+
+.feed-controls__date{
+  color: rgba(255,255,255,0.92) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
+
+  background-color: transparent !important;
+  color-scheme: dark;
+}
+
+/* WebKit internal text parts */
+.feed-controls__date::-webkit-datetime-edit,
+.feed-controls__date::-webkit-datetime-edit-text,
+.feed-controls__date::-webkit-datetime-edit-month-field,
+.feed-controls__date::-webkit-datetime-edit-day-field,
+.feed-controls__date::-webkit-datetime-edit-year-field{
+  color: rgba(255,255,255,0.92) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   Bulletproof white date icon (custom overlay)
+   - Hide native icon (WebKit)
+   - Draw our own white SVG icon
+========================================================= */
+
+.dateWrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Make room for the overlay icon */
+.dateWrap .feed-controls__date{
+  padding-right: 2.4rem !important;
+}
+
+/* Hide native calendar icon (keep picker working) */
+.dateWrap .feed-controls__date::-webkit-calendar-picker-indicator{
+  opacity: 0 !important;
+  cursor: pointer;
+}
+
+.dateIcon{
+  position: absolute;
+  right: 0.75rem;
+  width: 16px;
+  height: 16px;
+
+  /* ✅ make it clickable */
+  pointer-events: auto;
+  cursor: pointer;
+
+  opacity: 0.95;
+  fill: rgba(255,255,255,0.92);
+
+  /* ✅ keep it above the input */
+  z-index: 2;
+}
+
+/* =========================================================
+   iOS FIX: WebKit mask-composite causes "mystery boxes"
+   Disable masked ::before rims only on iOS and use inset border.
+   Paste at VERY BOTTOM of App.css
+========================================================= */
+@supports (-webkit-touch-callout: none){
+
+  /* kill the mask-composite rims that can render as squares */
+  .tab::before,
+  .feed-controls__field::before,
+  .feed-controls__clear::before,
+  .item-card::before,
+  .whatsnew__card::before,
+  .topbarGlass::before,
+  .madeby::before,
+  .socialbtn::before,
+  .livePill::before,
+  .authPill::before,
+  .app__authchip::before,
+  .authModal::before,
+  .glassModal::before,
+  .toast::before,
+  .mutePanel::before{
+    display: none !important;
+  }
+
+  /* replace with a reliable rim */
+  .tab,
+  .feed-controls__field,
+  .feed-controls__clear,
+  .item-card,
+  .whatsnew__card,
+  .topbarGlass,
+  .madeby,
+  .socialbtn,
+  .livePill,
+  .authPill,
+  .app__authchip,
+  .authModal,
+  .glassModal,
+  .toast,
+  .mutePanel{
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10) inset,
+      0 18px 45px rgba(0,0,0,0.55);
+  }
+}

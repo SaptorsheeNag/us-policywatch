@@ -137,6 +137,26 @@ export const App: React.FC = () => {
   // --- helper: sound ---
   const audioCtxRef = useRef<AudioContext | null>(null);
 
+  // ✅ Date input refs (so clicking the icon can open the picker)
+  const dateFromRef = useRef<HTMLInputElement | null>(null);
+  const dateToRef = useRef<HTMLInputElement | null>(null);
+
+  const openDatePicker = (ref: React.RefObject<HTMLInputElement | null>) => {
+    const el = ref.current;
+    if (!el) return;
+
+    // ✅ Best case (Chrome/Edge/Safari modern)
+    const anyEl = el as any;
+    if (typeof anyEl.showPicker === "function") {
+      anyEl.showPicker();
+      return;
+    }
+
+    // ✅ Fallback
+    el.focus();
+    el.click();
+  };
+
   const ensureAudioUnlocked = async () => {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
@@ -778,21 +798,51 @@ export const App: React.FC = () => {
                 <div className="feed-controls__field" title="Filter by date range">
                   <span className="feed-controls__label">Dates</span>
                   <div className="feed-controls__dates">
-                    <input
-                      className="feed-controls__date"
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      disabled={loading}
-                    />
+                    <div className="dateWrap">
+                      <input
+                        ref={dateFromRef}
+                        className="feed-controls__date"
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                        disabled={loading}
+                      />
+                      <svg
+                        className="dateIcon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          openDatePicker(dateFromRef);
+                        }}
+                      >
+                        <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm14 8H3v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V10Z"/>
+                      </svg>
+                    </div>
+
                     <span className="feed-controls__dash">—</span>
-                    <input
-                      className="feed-controls__date"
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      disabled={loading}
-                    />
+
+                    <div className="dateWrap">
+                      <input
+                        ref={dateToRef}
+                        className="feed-controls__date"
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                        disabled={loading}
+                      />
+                      <svg
+                        className="dateIcon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          openDatePicker(dateToRef);
+                        }}
+                      >
+                        <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm14 8H3v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V10Z"/>
+                      </svg>
+                    </div>
                   </div>
                 </div>
 
