@@ -7586,7 +7586,6 @@ async def _ks_pw_make_renderer(*, referer: str):
 
     browser = await p.chromium.launch(
         headless=True,
-        channel="msedge",
         args=[
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
