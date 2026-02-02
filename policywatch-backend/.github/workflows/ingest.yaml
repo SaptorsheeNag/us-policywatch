@@ -1,31 +1,160 @@
-name: Ingest Feeds
+name: PolicyWatch Daily Ingest + Impact
 
 on:
   schedule:
-    - cron: "0 7 * * *"      # daily 07:00 UTC
-    - cron: "0 8 * * 1"      # weekly Mondays 08:00 UTC (states)
+    # 7:00 PM ET (EST, UTC-5) = 00:00 UTC
+    - cron: "0 0 * * *"
+    # 9:00 PM ET (EST, UTC-5) = 02:00 UTC
+    - cron: "0 2 * * *"
   workflow_dispatch: {}
 
 jobs:
-  run:
+  ingest:
+    name: Ingest (7:00 PM ET)
     runs-on: ubuntu-latest
-    steps:
-      - name: Hit /ingest/federal-register
-        run: |
-          curl -sS -X POST \
-            -H "Authorization: Bearer $CRON_KEY" \
-            https://YOUR_API_HOST/ingest/federal-register || exit 1
-      - name: Hit White House / OFAC daily
-        run: |
-          curl -sS -X POST -H "Authorization: Bearer $CRON_KEY" https://YOUR_API_HOST/ingest/white-house || exit 1
-          curl -sS -X POST -H "Authorization: Bearer $CRON_KEY" https://YOUR_API_HOST/ingest/ofac || exit 1
-      - name: States weekly (only on weekly event)
-        if: github.event.schedule == '0 8 * * 1'
-        run: |
-          curl -sS -X POST \
-            -H "Authorization: Bearer $CRON_KEY" \
-            -H "Content-Type: application/json" \
-            -d '{}' \
-            https://YOUR_API_HOST/ingest/states || exit 1
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 0 * * *'
+
     env:
+      API_BASE: ${{ secrets.API_BASE }}
       CRON_KEY: ${{ secrets.CRON_KEY }}
+
+    steps:
+      - name: Run ingests sequentially
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "API_BASE=$API_BASE"
+
+          hit () {
+            local URL="$1"
+            echo "POST $URL"
+            curl -fsS -X POST \
+              -H "Authorization: Bearer $CRON_KEY" \
+              "$URL"
+            echo ""
+          }
+
+          hit_json () {
+            local URL="$1"
+            local BODY="$2"
+            echo "POST $URL  body=$BODY"
+            curl -fsS -X POST \
+              -H "Authorization: Bearer $CRON_KEY" \
+              -H "Content-Type: application/json" \
+              -d "$BODY" \
+              "$URL"
+            echo ""
+          }
+
+          # ----------------
+          # WHITE HOUSE
+          # ----------------
+          hit "$API_BASE/ingest/white-house"
+
+          # ----------------
+          # STATES (newsroom)
+          # ----------------
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["Texas"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["Florida"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["Pennsylvania"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["California"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["Washington"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["New York"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["Illinois"] }'
+          hit_json "$API_BASE/ingest/states/newsroom" '{ "states": ["Massachusetts"] }'
+
+          # ----------------
+          # STATES2
+          # ----------------
+          hit "$API_BASE/ingest/states2/ohio"
+          hit "$API_BASE/ingest/states2/utah"
+          hit "$API_BASE/ingest/states2/arizona"
+          hit "$API_BASE/ingest/states2/virginia"
+          hit "$API_BASE/ingest/states2/vermont"
+          hit "$API_BASE/ingest/states2/georgia"
+          hit "$API_BASE/ingest/states2/colorado"
+          hit "$API_BASE/ingest/states2/hawaii"
+          hit "$API_BASE/ingest/states2/alaska"
+          hit "$API_BASE/ingest/states2/maryland"
+          hit "$API_BASE/ingest/states2/new_jersey"
+          hit "$API_BASE/ingest/states2/minnesota"
+
+          # ----------------
+          # STATES3
+          # ----------------
+          hit "$API_BASE/ingest/states3/tennessee"
+          hit "$API_BASE/ingest/states3/south_carolina"
+          hit "$API_BASE/ingest/states3/north_carolina"
+          hit "$API_BASE/ingest/states3/oregon"
+          hit "$API_BASE/ingest/states3/michigan"
+          hit "$API_BASE/ingest/states3/kansas"
+          hit "$API_BASE/ingest/states3/missouri"
+          hit "$API_BASE/ingest/states3/iowa"
+          hit "$API_BASE/ingest/states3/nevada"
+          hit "$API_BASE/ingest/states3/wisconsin"
+          hit "$API_BASE/ingest/states3/new_mexico"
+
+
+  impact:
+    name: AI Impact (9:00 PM ET)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 2 * * *'
+
+    env:
+      API_BASE: ${{ secrets.API_BASE }}
+      CRON_KEY: ${{ secrets.CRON_KEY }}
+
+    steps:
+      - name: Run impact sequentially
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          impact () {
+            local J="$1"
+            local BODY="{\"jurisdiction\":\"${J}\",\"hours\":0,\"max_items\":100000,\"force\":false}"
+            echo "POST $API_BASE/ai/impact/batch  body=$BODY"
+            curl -fsS -X POST \
+              -H "Authorization: Bearer $CRON_KEY" \
+              -H "Content-Type: application/json" \
+              -d "$BODY" \
+              "$API_BASE/ai/impact/batch"
+            echo ""
+          }
+
+          # White House
+          impact "wh"
+
+          # States (jurisdiction codes)
+          impact "tx"
+          impact "fl"
+          impact "pa"
+          impact "ca"
+          impact "wa"
+          impact "ny"
+          impact "il"
+          impact "ma"
+          impact "oh"
+          impact "ut"
+          impact "az"
+          impact "va"
+          impact "vt"
+          impact "ga"
+          impact "co"
+          impact "hi"
+          impact "ak"
+          impact "md"
+          impact "nj"
+          impact "mn"
+          impact "tn"
+          impact "sc"
+          impact "nc"
+          impact "or"
+          impact "mi"
+          impact "ks"
+          impact "mo"
+          impact "ia"
+          impact "nv"
+          impact "wi"
+          impact "nm"
