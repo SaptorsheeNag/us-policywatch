@@ -223,6 +223,10 @@ async def _startup():
 async def health():
     return {"ok": True, "time": datetime.now(timezone.utc).isoformat()}
 
+@app.get("/")
+async def root():
+    return {"service": "PolicyWatch API", "status": "ok"}
+
 # -----------------------
 # Ingest: Federal Register
 # -----------------------
