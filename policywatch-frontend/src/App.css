@@ -4719,3 +4719,130 @@ img, svg { max-width: 100%; height: auto; }
     overflow-x: hidden;
   }
 }
+
+/* =========================================================
+   MOBILE ONLY — Pagination centered with equal side padding
+   (fixes “shifted left” look on iPhone SE/XR/12/14/15/16 + Galaxy/Pixels)
+   Only affects the pagination component
+========================================================= */
+@media (max-width: 680px){
+  .pagination{
+    /* make it a full-width row so centering is mathematically symmetric */
+    width: 100%;
+    box-sizing: border-box;
+
+    /* equal padding on both sides (uses your gutter if present) */
+    padding-left: var(--gutter, 16px);
+    padding-right: var(--gutter, 16px);
+
+    /* keep everything centered */
+    justify-content: center;
+
+    /* prevent any weird inherited alignment */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ensure the page-number group doesn't “pull” the layout to one side */
+  .pagination__pages{
+    justify-content: center;
+    max-width: 100%;
+  }
+}
+
+/* =========================================================
+   ULTRA-SMALL PHONES ONLY (iPhone SE, Galaxy Z Fold narrow)
+   Fix: allow drag-scroll BUT ensure pages 1–2 are reachable/visible
+========================================================= */
+@media (max-width: 390px){
+  .pagination__pages{
+    /* make it a true horizontal scroller */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    /* IMPORTANT: prevent wrapping so scroll math is consistent */
+    flex-wrap: nowrap;
+
+    /* IMPORTANT: don't center the scroll content (it hides 1–2) */
+    justify-content: flex-start;
+
+    /* give scrollable content equal "breathing room" so edges aren't clipped */
+    padding-left: var(--gutter, 16px);
+    padding-right: var(--gutter, 16px);
+
+    /* optional: hides ugly scrollbar on most browsers */
+    scrollbar-width: none;          /* Firefox */
+  }
+
+  .pagination__pages::-webkit-scrollbar{
+    display: none;                  /* Chrome/Safari */
+  }
+
+  /* ensure pills don't shrink inside the scroll row */
+  .pagination__page,
+  .pagination__ellipsis{
+    flex: 0 0 auto;
+  }
+}
+
+/* =========================================================
+   DESKTOP (>=1101px) — pin overlays to viewport edges
+   livePill -> left edge, auth -> right edge
+   (does NOT affect tablets/phones)
+========================================================= */
+@media (min-width: 1101px) {
+
+  /* how far the centered .app is from the viewport edge */
+  :root{
+    --appW: min(1120px, calc(100vw - (2 * var(--gutter))));
+    --sideGap: calc((100vw - var(--appW)) / 2);
+    --edgeInset: 45px; /* distance from viewport edge */
+  }
+
+  /* live pill: move from app-gutter land to true left edge */
+  .livePill{
+    left: calc(var(--edgeInset) - var(--gutter) - var(--sideGap)) !important;
+    padding-left: 1.25rem !important; /* keep your internal look */
+  }
+
+  /* authbar: move to true right edge */
+  .app__authbar{
+    right: calc(var(--edgeInset) - var(--gutter) - var(--sideGap)) !important;
+  }
+}
+
+
+/* =========================================================
+   4K ONLY — keep overlays on true viewport edges
+   (your page is scaled, so we pin these as fixed + scaled)
+========================================================= */
+@media (min-width: 2560px) and (min-height: 1400px) {
+
+  :root{
+    /* matches your 4K scale block */
+    --uiScale4k: 1.32;
+    --edgeInset4k: 18px;
+  }
+
+  /* live pill pinned to viewport left */
+  .livePill{
+    position: fixed !important;
+    top: var(--overlayTop) !important;
+    left: var(--edgeInset4k) !important;
+
+    transform: scale(var(--uiScale4k));
+    transform-origin: top left;
+  }
+
+  /* auth pinned to viewport right */
+  .app__authbar{
+    position: fixed !important;
+    top: var(--overlayTop) !important;
+    right: var(--edgeInset4k) !important;
+
+    transform: scale(var(--uiScale4k));
+    transform-origin: top right;
+  }
+}
+
+
