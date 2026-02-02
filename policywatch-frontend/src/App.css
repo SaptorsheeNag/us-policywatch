@@ -4846,21 +4846,15 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================================================
-   FIX: iOS / Mobile date input visibility (Safari + Chrome)
-   - Fix invisible text
-   - Force white calendar icon
-   - Preserve glass UI
+   Mobile date input visibility (keep)
 ========================================================= */
-
 .feed-controls__date{
   color: rgba(255,255,255,0.92) !important;
   -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
-
   background-color: transparent !important;
   color-scheme: dark;
 }
 
-/* WebKit internal text parts */
 .feed-controls__date::-webkit-datetime-edit,
 .feed-controls__date::-webkit-datetime-edit-text,
 .feed-controls__date::-webkit-datetime-edit-month-field,
@@ -4872,34 +4866,9 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================================================
-   FIX: iOS / Mobile date input visibility (Safari + Chrome)
-   - Fix invisible text
-   - Keep glass UI
-========================================================= */
-
-.feed-controls__date{
-  color: rgba(255,255,255,0.92) !important;
-  -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
-
-  background-color: transparent !important;
-  color-scheme: dark;
-}
-
-/* WebKit internal text parts */
-.feed-controls__date::-webkit-datetime-edit,
-.feed-controls__date::-webkit-datetime-edit-text,
-.feed-controls__date::-webkit-datetime-edit-month-field,
-.feed-controls__date::-webkit-datetime-edit-day-field,
-.feed-controls__date::-webkit-datetime-edit-year-field{
-  color: rgba(255,255,255,0.92) !important;
-  -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
-  opacity: 1 !important;
-}
-
-/* =========================================================
-   Bulletproof white date icon (custom overlay)
-   - Hide native icon (WebKit)
-   - Draw our own white SVG icon
+   Date input behavior:
+   - Mobile (touch): input + icon open picker
+   - Desktop (mouse): ONLY icon opens picker
 ========================================================= */
 
 .dateWrap{
@@ -4908,32 +4877,55 @@ img, svg { max-width: 100%; height: auto; }
   align-items: center;
 }
 
-/* Make room for the overlay icon */
+/* input visuals */
 .dateWrap .feed-controls__date{
-  padding-right: 2.4rem !important;
+  padding-right: 2.6rem !important; /* space for icon */
 }
 
-/* Hide native calendar icon (keep picker working) */
+/* hide native calendar icon but keep picker functional */
 .dateWrap .feed-controls__date::-webkit-calendar-picker-indicator{
   opacity: 0 !important;
-  cursor: pointer;
 }
 
+/* SVG icon sits on the right */
 .dateIcon{
   position: absolute;
   right: 0.75rem;
   width: 16px;
   height: 16px;
-
-  /* ✅ make it clickable */
-  pointer-events: auto;
-  cursor: pointer;
-
   opacity: 0.95;
   fill: rgba(255,255,255,0.92);
-
-  /* ✅ keep it above the input */
   z-index: 2;
+}
+
+/* ---------------------------
+   MOBILE / TOUCH:
+   whole input clickable
+--------------------------- */
+@media (hover: none) and (pointer: coarse){
+  .dateWrap .feed-controls__date{
+    cursor: pointer;
+    pointer-events: auto;   /* ✅ input works on tap */
+  }
+  .dateIcon{
+    cursor: pointer;
+    pointer-events: auto;   /* ✅ icon works too */
+  }
+}
+
+/* ---------------------------
+   DESKTOP / MOUSE:
+   ONLY icon clickable
+--------------------------- */
+@media (hover: hover) and (pointer: fine){
+  .dateWrap .feed-controls__date{
+    pointer-events: none;   /* ✅ clicking date area does NOTHING */
+    cursor: default;
+  }
+  .dateIcon{
+    pointer-events: auto;   /* ✅ ONLY icon receives clicks */
+    cursor: pointer;
+  }
 }
 
 /* =========================================================
@@ -4943,26 +4935,25 @@ img, svg { max-width: 100%; height: auto; }
 ========================================================= */
 @supports (-webkit-touch-callout: none){
 
-  /* kill the mask-composite rims that can render as squares */
-  .tab::before,
-  .feed-controls__field::before,
-  .feed-controls__clear::before,
-  .item-card::before,
-  .whatsnew__card::before,
-  .topbarGlass::before,
-  .madeby::before,
-  .socialbtn::before,
-  .livePill::before,
-  .authPill::before,
-  .app__authchip::before,
-  .authModal::before,
-  .glassModal::before,
-  .toast::before,
-  .mutePanel::before{
+  .tab::before, .tab::after,
+  .feed-controls__field::before, .feed-controls__field::after,
+  .feed-controls__clear::before, .feed-controls__clear::after,
+  .item-card::before, .item-card::after,
+  .whatsnew__card::before, .whatsnew__card::after,
+  .topbarGlass::before, .topbarGlass::after,
+  .madeby::before, .madeby::after,
+  .socialbtn::before, .socialbtn::after,
+  .livePill::before, .livePill::after,
+  .authPill::before, .authPill::after,
+  .app__authchip::before, .app__authchip::after,
+  .authModal::before, .authModal::after,
+  .glassModal::before, .glassModal::after,
+  .toast::before, .toast::after,
+  .mutePanel::before, .mutePanel::after{
     display: none !important;
   }
 
-  /* replace with a reliable rim */
+  /* keep your fallback rim */
   .tab,
   .feed-controls__field,
   .feed-controls__clear,
