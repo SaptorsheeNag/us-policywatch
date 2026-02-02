@@ -15,7 +15,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 0 * * *'
 
     env:
-      API_BASE: ${{ secrets.API_BASE }}
+      API_BASE: ${{ vars.API_BASE }}
       CRON_KEY: ${{ secrets.CRON_KEY }}
 
     steps:
@@ -102,7 +102,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 2 * * *'
 
     env:
-      API_BASE: ${{ secrets.API_BASE }}
+      API_BASE: ${{ vars.API_BASE }}
       CRON_KEY: ${{ secrets.CRON_KEY }}
 
     steps:
