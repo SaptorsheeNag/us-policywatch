@@ -9,7 +9,7 @@ from .ingest_states3 import INGESTERS_V3
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env", override=True)
 from typing import Dict, Any
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Query
 from pydantic import BaseModel
@@ -226,6 +226,11 @@ async def health():
 @app.get("/")
 async def root():
     return {"service": "PolicyWatch API", "status": "ok"}
+
+@app.head("/")
+async def root_head():
+    return Response(status_code=200)
+
 
 # -----------------------
 # Ingest: Federal Register
