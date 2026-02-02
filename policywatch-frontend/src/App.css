@@ -4929,46 +4929,30 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================================================
-   iOS FIX: WebKit mask-composite causes "mystery boxes"
-   Disable masked ::before rims only on iOS and use inset border.
-   Paste at VERY BOTTOM of App.css
+   iOS FIX: remove ONLY the masked rim (::before)
+   Keep ::after so your red/blue/white glows stay.
 ========================================================= */
 @supports (-webkit-touch-callout: none){
 
-  .tab::before, .tab::after,
-  .feed-controls__field::before, .feed-controls__field::after,
-  .feed-controls__clear::before, .feed-controls__clear::after,
-  .item-card::before, .item-card::after,
-  .whatsnew__card::before, .whatsnew__card::after,
-  .topbarGlass::before, .topbarGlass::after,
-  .madeby::before, .madeby::after,
-  .socialbtn::before, .socialbtn::after,
-  .livePill::before, .livePill::after,
-  .authPill::before, .authPill::after,
-  .app__authchip::before, .app__authchip::after,
-  .authModal::before, .authModal::after,
-  .glassModal::before, .glassModal::after,
-  .toast::before, .toast::after,
-  .mutePanel::before, .mutePanel::after{
+  /* Start narrow: ONLY the ones you KNOW are breaking */
+  .livePill::before,
+  .whatsActionBtn::before,
+  .authPill::before,
+  .app__authchip::before,
+  .topbarGlass::before,
+  .madeby::before,
+  .socialbtn::before{
     display: none !important;
   }
 
-  /* keep your fallback rim */
-  .tab,
-  .feed-controls__field,
-  .feed-controls__clear,
-  .item-card,
-  .whatsnew__card,
-  .topbarGlass,
-  .madeby,
-  .socialbtn,
+  /* keep a subtle rim so it doesn’t feel flat */
   .livePill,
+  .whatsActionBtn,
   .authPill,
   .app__authchip,
-  .authModal,
-  .glassModal,
-  .toast,
-  .mutePanel{
+  .topbarGlass,
+  .madeby,
+  .socialbtn{
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.10) inset,
       0 18px 45px rgba(0,0,0,0.55);
