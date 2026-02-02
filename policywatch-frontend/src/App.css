@@ -4929,32 +4929,42 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================================================
-   iOS FIX: remove ONLY the masked rim (::before)
-   Keep ::after so your red/blue/white glows stay.
+   iOS ONLY: Fix rectangular artifacts on LIVE pill + WhatsNew buttons
+   - iOS is drawing masked pseudo layers as rectangles
+   - Disable pseudo layers ONLY for these components
+   - Re-add safe rim/glow via box-shadow (no masks)
 ========================================================= */
 @supports (-webkit-touch-callout: none){
 
-  /* Start narrow: ONLY the ones you KNOW are breaking */
+  /* 1) Kill the masked pseudo layers that render as rectangles */
   .livePill::before,
+  .livePill::after,
   .whatsActionBtn::before,
-  .authPill::before,
-  .app__authchip::before,
-  .topbarGlass::before,
-  .madeby::before,
-  .socialbtn::before{
+  .whatsActionBtn::after{
+    content: none !important;
     display: none !important;
   }
 
-  /* keep a subtle rim so it doesn’t feel flat */
+  /* 2) Kill any internal sheen overlay that can also become a rectangle */
+  .livePill .liveSheen{
+    display: none !important;
+  }
+
+  /* 3) Put back a clean “glass” rim + glow (safe on iOS) */
   .livePill,
-  .whatsActionBtn,
-  .authPill,
-  .app__authchip,
-  .topbarGlass,
-  .madeby,
-  .socialbtn{
+  .whatsActionBtn{
     box-shadow:
-      0 0 0 1px rgba(255,255,255,0.10) inset,
-      0 18px 45px rgba(0,0,0,0.55);
+      0 0 0 1px rgba(255,255,255,0.14) inset,
+      0 10px 30px rgba(0,0,0,0.45),
+      0 0 22px rgba(120,80,255,0.18) !important; /* subtle glow */
+  }
+
+  /* Optional: make the buttons look less flat without masks */
+  .whatsActionBtn{
+    background-image: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.08),
+      rgba(255,255,255,0.03)
+    ) !important;
   }
 }
