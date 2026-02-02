@@ -206,14 +206,17 @@ CRON_KEY = os.getenv("CRON_KEY")
 
 app = FastAPI(title="PolicyWatch API", version="0.1.0")
 
-origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")] or ["*"]
+raw = os.getenv("CORS_ORIGINS", "")
+origins = [o.strip().rstrip("/") for o in raw.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 async def _startup():

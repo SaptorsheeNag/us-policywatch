@@ -63,15 +63,21 @@ def build_where(
     where_sql = (" where " + " and ".join(where)) if where else ""
     return where_sql, params
 
-
 async def init_pool():
     global _DB_POOL
     if _DB_POOL is None:
         dsn = os.getenv("DATABASE_URL")
         if not dsn:
             raise RuntimeError("DATABASE_URL is not set")
-        _DB_POOL = await asyncpg.create_pool(dsn, min_size=1, max_size=5)
+
+        _DB_POOL = await asyncpg.create_pool(
+            dsn,
+            statement_cache_size=0,  # ✅ FIX
+            min_size=1,
+            max_size=5,
+        )
     return _DB_POOL
+
 
 
 async def get_pool():
