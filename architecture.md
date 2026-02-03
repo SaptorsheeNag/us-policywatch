@@ -56,7 +56,7 @@ flowchart LR
 ### Diagram B — Data Flow & Internal Components
 
 ```mermaid
-flowchart TB
+flowchart LR
   %% ---------- Frontend ----------
   subgraph FE["Frontend (React / Vite on Vercel)"]
     APP["App.tsx<br/>routing, state, polling, modals"]
@@ -74,6 +74,9 @@ flowchart TB
     OAUTH["Google OAuth + Email"]
   end
 
+  %% ---------- Edge / Cache ----------
+  CACHE["CDN / Edge Cache<br/>(HTTP cache, revalidation)"]
+
   %% ---------- Backend ----------
   subgraph BE["Render (FastAPI API)"]
     FEEDAPI["Public Feed APIs<br/>/frontend/items<br/>/frontend/statuses<br/>/frontend/whats-new"]
@@ -87,6 +90,8 @@ flowchart TB
     ING3["ingest_states3.py"]
     WH["White House crawler<br/>7 sections"]
     FR["Federal Register ingest"]
+
+    FAILQ["Retry / Backoff<br/>Failed ingest handling"]
   end
 
   %% ---------- AI Providers ----------
@@ -110,8 +115,8 @@ flowchart TB
   APP -->|Login| OAUTH
   OAUTH -->|JWT access_token| APP
 
-  %% ---------- Read paths (request-time) ----------
-  API --> FEEDAPI --> ITEMS
+  %% ---------- Read paths (cached) ----------
+  API --> CACHE --> FEEDAPI --> ITEMS
   API --> USERAPI
   USERAPI --> PREFS
   USERAPI --> ALERTS
@@ -133,7 +138,11 @@ flowchart TB
   CRONAPI --> ING2 --> ITEMS
   CRONAPI --> ING3 --> ITEMS
 
-  %% ---------- AI enrichment (async / batch) ----------
+  %% ---------- Failure handling ----------
+  CRONAPI --> FAILQ
+  FAILQ -->|retry| CRONAPI
+
+  %% ---------- AI enrichment ----------
   CRONAPI --> OA --> ITEMS
   CRONAPI --> CF --> ITEMS
 
