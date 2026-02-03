@@ -4970,46 +4970,63 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================================================
-   iOS ONLY: Remove mask-composite layers (rectangle bug)
-   while KEEPING the red/blue “sexy” look.
+   iOS ONLY: Kill the pseudo layers that turn into rectangles
+   and recreate the red/blue glow SAFELY on the element itself
 ========================================================= */
 @supports (-webkit-touch-callout: none){
 
-  /* ----------------------------
-     1) WhatsNew action buttons
-     Keep the blobs (::after), remove only masked rim (::before)
-  ---------------------------- */
-  .whatsActionBtn::before{
+  /* ---------- WhatsNew action buttons (Set preferences / Alerts) ---------- */
+
+  /* 1) Pseudos are the rectangle bug on iOS (especially blurred ::after) */
+  .whatsActionBtn::before,
+  .whatsActionBtn::after{
     content: none !important;
     display: none !important;
   }
 
-  /* keep ::after blobs alive + a bit punchier on iOS */
-  .whatsActionBtn::after{
-    opacity: 0.78 !important;
-    filter: blur(18px) saturate(1.18) !important;
-  }
-
-  /* add back a clean rim without masks */
+  /* 2) Recreate “sexy” red/blue blobs with safe gradients (NO filters / masks) */
   .whatsActionBtn{
+    position: relative;
+    overflow: hidden;             /* keep glow inside pill */
+    border-radius: 999px;
+
+    /* Safari iOS sometimes needs this to respect rounded clipping perfectly */
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+
+    background:
+      radial-gradient(140px 70px at 18% 45%, rgba(90,150,255,0.33), transparent 68%),
+      radial-gradient(160px 80px at 82% 55%, rgba(255,85,120,0.35), transparent 64%),
+      linear-gradient(90deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03)),
+      rgba(255,255,255,0.03) !important;
+
+    border-color: rgba(255,255,255,0.14) !important;
+
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.14) inset,
-      0 14px 40px rgba(0,0,0,0.45) !important;
+      0 14px 40px rgba(0,0,0,0.45),
+      0 0 24px rgba(120,80,255,0.14) !important;
+
+    /* helps iOS stop doing weird layer rasterization */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    isolation: isolate;
   }
 
-  /* iOS doesn’t really “hover” — give the same punch on tap */
+  /* iOS “hover” doesn’t exist — make tap feel like the hover pop */
   .whatsActionBtn:active{
-    background: rgba(255,255,255,0.065) !important;
+    background:
+      radial-gradient(140px 70px at 18% 45%, rgba(90,150,255,0.42), transparent 68%),
+      radial-gradient(160px 80px at 82% 55%, rgba(255,85,120,0.44), transparent 64%),
+      linear-gradient(90deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05)),
+      rgba(255,255,255,0.06) !important;
+
     border-color: rgba(255,255,255,0.18) !important;
-    filter: brightness(1.02) !important;
+    filter: brightness(1.03) !important;
   }
 
-
-  /* ----------------------------
-     2) LIVE pill
-     It relied on masked layers for the blobs.
-     So: kill both masked pseudos and recreate blobs on the element itself.
-  ---------------------------- */
+  /* ---------- LIVE pill (keep your current “sexy” iOS pill gradients) ---------- */
   .livePill::before,
   .livePill::after{
     content: none !important;
@@ -5020,8 +5037,9 @@ img, svg { max-width: 100%; height: auto; }
     display: none !important;
   }
 
-  /* recreate the original blue-left + red-right vibe safely (NO masks) */
   .livePill{
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+
     background:
       radial-gradient(120px 60px at 18% 50%, rgba(90,150,255,0.32), transparent 68%),
       radial-gradient(140px 70px at 82% 50%, rgba(255,85,120,0.36), transparent 64%),
@@ -5033,9 +5051,14 @@ img, svg { max-width: 100%; height: auto; }
       0 0 0 1px rgba(255,255,255,0.14) inset,
       0 10px 30px rgba(0,0,0,0.45),
       0 0 22px rgba(120,80,255,0.16) !important;
+
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    isolation: isolate;
   }
 
-  /* tap-state punch (since hover is unreliable on iOS) */
   .livePill:active{
     background:
       radial-gradient(120px 60px at 18% 50%, rgba(90,150,255,0.40), transparent 68%),
