@@ -244,6 +244,19 @@ body::selection { background: rgba(90,150,255,0.25); }
   to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
 }
 
+@keyframes paragraphSettle {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
 .taglineWrap{
   width: 100%;
   max-width: 980px;           /* nice editorial line length */
@@ -1209,6 +1222,34 @@ body::selection { background: rgba(90,150,255,0.25); }
   font-size: 0.95rem;
   line-height: 1.65;
   color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---------- Paragraph settle (subtle text entrance) ---------- */
+/* ---------- Paragraph settle (cinematic, noticeable but classy) ---------- */
+.item-card__summary,
+.impact__why,
+.impact__overall,
+.toast__summary,
+.glassModal p {
+  animation: paragraphSettle 2200ms cubic-bezier(.22,.85,.25,1) both;
+  animation-delay: 120ms;
+  will-change: opacity, transform, filter;
+}
+
+/* subtle stagger inside cards */
+.item-card__summary { animation-delay: 160ms; }
+.impact__why        { animation-delay: 220ms; }
+.impact__overall    { animation-delay: 280ms; }
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .item-card__summary,
+  .impact__why,
+  .impact__overall,
+  .toast__summary,
+  .glassModal p {
+    animation: none !important;
+  }
 }
 
 /* pagination controls */
@@ -4968,3 +5009,365 @@ img, svg { max-width: 100%; height: auto; }
     ) !important;
   }
 }
+
+/* =========================================================
+   GLOBAL: Center Preferences/Alerts modal on ALL devices
+   (phones, tablets, desktop, 4K, nest hubs)
+========================================================= */
+
+/* Overlay: always center, always equal padding */
+.glassOverlay{
+  /* rock-solid centering */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* equal breathing room that scales with screen size + safe areas */
+  padding:
+    calc(clamp(16px, 3vw, 40px) + env(safe-area-inset-top))
+    clamp(16px, 3vw, 40px)
+    calc(clamp(16px, 3vw, 40px) + env(safe-area-inset-bottom)) !important;
+
+  /* allow scroll if modal is tall */
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Modal: responsive width + max height so it never sticks to top */
+.glassModal{
+  width: 100% !important;
+
+  /* on phones it becomes ~96vw, on big screens it stops growing */
+  max-width: min(96vw, 760px) !important;
+
+  /* stays centered and never touches edges */
+  margin: 0 !important;
+
+  /* keep it centered but scrollable inside if needed */
+  max-height: calc(100dvh - (2 * clamp(16px, 3vw, 40px)) - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+/* Optional: if your modal content itself needs internal scrolling */
+.glassModal{
+  overflow: auto;
+}
+
+
+/* =========================
+   ALERTS MODAL ONLY (safe)
+========================= */
+
+/* kill inner rim */
+.glassModal--alerts::before{
+  display:none !important;
+}
+
+/* keep divider spacing clean */
+.glassModal--alerts .glassDivider{
+  margin: 0.85rem 0 !important;
+}
+.glassModal--alerts .glassDivider + .glassLabel{
+  margin-top: 0.75rem !important;
+}
+
+/* pin buttons right on ALL devices */
+.glassModal--alerts .alertRow{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:wrap !important;
+  justify-content:flex-start !important;
+  gap: 0.65rem !important;
+}
+.glassModal--alerts .alertRow__main{
+  flex: 1 1 260px !important;
+  min-width: 0 !important;
+}
+.glassModal--alerts .alertRow__actions{
+  margin-left:auto !important;
+  display:flex !important;
+  gap: 0.5rem !important;
+  justify-content:flex-end !important;
+  align-items:center !important;
+}
+
+@media (max-width: 520px){
+  .glassModal--alerts .alertRow__actions{
+    width: 100% !important;
+    justify-content: flex-end !important;
+  }
+}
+
+/* =========================================================
+   ALERTS MODAL — FINAL FIX
+   - removes the inner rim "box"
+   - prevents Mute/Delete from sticking out on phones
+   Paste at VERY BOTTOM of App.css
+========================================================= */
+
+/* 1) Inner rim is created by .glassModal::before — disable it ONLY for Alerts */
+.glassModal.glassModal--alerts::before{
+  content: none !important;
+  display: none !important;
+}
+
+/* 2) Make each alert row a safe container */
+.glassModal--alerts .alertRow{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;            /* hard stop: nothing can stick outside */
+}
+
+/* 3) Allow the left side to shrink correctly (critical in flex layouts) */
+.glassModal--alerts .alertRow__main{
+  min-width: 0 !important;     /* prevents actions pushing outside */
+  flex: 1 1 auto !important;
+}
+
+/* 4) Actions: never overflow, allow wrap when needed */
+.glassModal--alerts .alertRow__actions{
+  min-width: 0 !important;
+  max-width: 100%;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+  gap: 0.5rem !important;
+}
+
+/* 5) Buttons: don't shrink weirdly, but also don't overflow */
+.glassModal--alerts .alertRow__actions button{
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+
+/* 6) Phone layout: actions go full-width on their own line, aligned right */
+@media (max-width: 520px){
+  .glassModal--alerts .alertRow{
+    flex-wrap: wrap !important;
+    gap: 0.65rem !important;
+  }
+
+  .glassModal--alerts .alertRow__actions{
+    width: 100% !important;
+    margin-left: 0 !important;
+    justify-content: flex-end !important;
+  }
+}
+
+/* =========================================================
+   TAGLINE DESCRIPTION — CENTERED & BALANCED (ALL DEVICES)
+   ========================================================= */
+
+.app__tagline--glass{
+  /* equal visual padding on all sides */
+  padding: clamp(14px, 3vw, 22px) !important;
+
+  /* center text */
+  text-align: center !important;
+
+  /* improve vertical rhythm */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ensure text itself behaves nicely */
+.app__tagline--glass .taglineText{
+  display: block;              /* avoids inline weirdness */
+  max-width: 65ch;             /* beautiful reading width */
+  margin-inline: auto;         /* perfect centering */
+  text-align: center;
+
+  /* clean wrapping everywhere */
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* =========================================================
+   DATE RANGE — MOBILE ALIGNMENT FIX (NO TRUNCATION)
+========================================================= */
+
+@media (max-width: 680px) {
+  .feed-controls__field:has(.feed-controls__dates) {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .feed-controls__dates {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+
+    /* slightly tighter gap so inputs have more room */
+    column-gap: 0.45rem !important;
+  }
+
+  .dateWrap {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .dateWrap .feed-controls__date {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    /* responsive font prevents dd-mm-yyyy clipping across devices */
+    font-size: clamp(0.82rem, 2.6vw, 0.95rem) !important;
+
+    /* don’t waste horizontal space */
+    padding-left: 0.35rem !important;
+
+    /* reserve LESS space for icon (this was the main cause) */
+    padding-right: 1.95rem !important;
+
+    /* keep it visually centered */
+    text-align: center !important;
+    letter-spacing: 0 !important;
+  }
+
+  /* WebKit date internals: help it center without weird truncation */
+  .dateWrap .feed-controls__date::-webkit-datetime-edit {
+    padding: 0 !important;
+  }
+  .dateWrap .feed-controls__date::-webkit-datetime-edit-fields-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .feed-controls__dash {
+    justify-self: center !important;
+    align-self: center !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+
+  /* icon pinned right, but slightly closer so it steals less room */
+  .dateIcon {
+    right: 0.55rem !important;
+  }
+}
+
+/* ultra-narrow foldables */
+@media (max-width: 360px) {
+  .feed-controls__dates {
+    column-gap: 0.38rem !important;
+  }
+  .dateWrap .feed-controls__date {
+    font-size: 0.82rem !important;
+    padding-right: 1.85rem !important;
+  }
+}
+
+/* ===========================
+   iOS date "placeholder" fix
+   Uses .dateWrap[data-ph] + .hasValue
+=========================== */
+
+.dateWrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* space for your custom svg icon */
+.dateWrap .feed-controls__date{
+  padding-right: 1.6rem; /* room for .dateIcon */
+}
+
+/* custom placeholder text (only when empty) */
+.dateWrap:not(.hasValue)::before{
+  content: attr(data-ph);
+  position: absolute;
+  left: 0.15rem;         /* match your input padding-left */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);  /* muted placeholder */
+  letter-spacing: 0.01em;
+}
+
+/* Hide the native empty date text on iOS so your fake placeholder shows */
+.dateWrap:not(.hasValue) .feed-controls__date{
+  color: transparent;
+  -webkit-text-fill-color: transparent; /* iOS Safari */
+  caret-color: rgba(255,255,255,0.85);  /* keep caret visible if user edits */
+}
+
+/* When a value exists, show real text normally */
+.dateWrap.hasValue .feed-controls__date{
+  color: rgba(255, 255, 255, 0.92);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.92);
+}
+
+/* Put your SVG icon on the right, clickable */
+.dateWrap .dateIcon{
+  position: absolute;
+  right: 0.15rem;
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+/* =========================================================
+   iOS-only fake placeholder for <input type="date">
+   ========================================================= */
+
+/* default: NO fake placeholder anywhere */
+.dateWrap:not(.hasValue)::before { content: none; }
+
+/* wrapper must be the positioning context for ::before */
+.dateWrap{
+  position: relative;
+  display: inline-flex; /* keeps sizing tight around the input */
+  align-items: center;
+}
+
+/* iOS Safari only */
+@supports (-webkit-touch-callout: none) {
+  .dateWrap:not(.hasValue)::before{
+    content: attr(data-ph);
+    position: absolute;
+    left: 0.15rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+  }
+
+  /* hide the native date text on iOS when empty */
+  .dateWrap:not(.hasValue) .feed-controls__date{
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    caret-color: rgba(255,255,255,0.85);
+  }
+
+  /* extra iOS safety: hide the internal edit fields when empty */
+  .dateWrap:not(.hasValue) .feed-controls__date::-webkit-datetime-edit,
+  .dateWrap:not(.hasValue) .feed-controls__date::-webkit-datetime-edit-text,
+  .dateWrap:not(.hasValue) .feed-controls__date::-webkit-datetime-edit-month-field,
+  .dateWrap:not(.hasValue) .feed-controls__date::-webkit-datetime-edit-day-field,
+  .dateWrap:not(.hasValue) .feed-controls__date::-webkit-datetime-edit-year-field{
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  /* show real value normally when present */
+  .dateWrap.hasValue .feed-controls__date{
+    color: rgba(255,255,255,0.92) !important;
+    -webkit-text-fill-color: rgba(255,255,255,0.92) !important;
+  }
+}
+
+
+

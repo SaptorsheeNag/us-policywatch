@@ -297,7 +297,7 @@ export const AlertsModal: React.FC<Props> = ({ open, fullName, onClose }) => {
 
   return (
     <div className="glassOverlay" role="dialog" aria-modal="true" onMouseDown={() => !busy && onClose()}>
-      <div className="glassModal glassModal--wide" onMouseDown={(e) => e.stopPropagation()}>
+      <div className="glassModal glassModal--wide glassModal--alerts" onMouseDown={(e) => e.stopPropagation()}>
         <div className="glassModal__bgBlob" aria-hidden="true" />
         <div className="glassModal__top">
           <div className="glassModal__title">Alerts for {prettyName}</div>

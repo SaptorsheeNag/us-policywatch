@@ -798,7 +798,10 @@ export const App: React.FC = () => {
                 <div className="feed-controls__field" title="Filter by date range">
                   <span className="feed-controls__label">Dates</span>
                   <div className="feed-controls__dates">
-                    <div className="dateWrap">
+                    <div
+                      className={`dateWrap ${dateFrom ? "hasValue" : ""}`}
+                      data-ph="dd-mm-yyyy"
+                    >
                       <input
                         ref={dateFromRef}
                         className="feed-controls__date"
@@ -822,7 +825,10 @@ export const App: React.FC = () => {
 
                     <span className="feed-controls__dash">—</span>
 
-                    <div className="dateWrap">
+                    <div
+                      className={`dateWrap ${dateTo ? "hasValue" : ""}`}
+                      data-ph="dd-mm-yyyy"
+                    >
                       <input
                         ref={dateToRef}
                         className="feed-controls__date"
