@@ -4970,45 +4970,83 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================================================
-   iOS ONLY: Fix rectangular artifacts on LIVE pill + WhatsNew buttons
-   - iOS is drawing masked pseudo layers as rectangles
-   - Disable pseudo layers ONLY for these components
-   - Re-add safe rim/glow via box-shadow (no masks)
+   iOS ONLY: Remove mask-composite layers (rectangle bug)
+   while KEEPING the red/blue “sexy” look.
 ========================================================= */
 @supports (-webkit-touch-callout: none){
 
-  /* 1) Kill the masked pseudo layers that render as rectangles */
-  .livePill::before,
-  .livePill::after,
-  .whatsActionBtn::before,
-  .whatsActionBtn::after{
+  /* ----------------------------
+     1) WhatsNew action buttons
+     Keep the blobs (::after), remove only masked rim (::before)
+  ---------------------------- */
+  .whatsActionBtn::before{
     content: none !important;
     display: none !important;
   }
 
-  /* 2) Kill any internal sheen overlay that can also become a rectangle */
+  /* keep ::after blobs alive + a bit punchier on iOS */
+  .whatsActionBtn::after{
+    opacity: 0.78 !important;
+    filter: blur(18px) saturate(1.18) !important;
+  }
+
+  /* add back a clean rim without masks */
+  .whatsActionBtn{
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.14) inset,
+      0 14px 40px rgba(0,0,0,0.45) !important;
+  }
+
+  /* iOS doesn’t really “hover” — give the same punch on tap */
+  .whatsActionBtn:active{
+    background: rgba(255,255,255,0.065) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    filter: brightness(1.02) !important;
+  }
+
+
+  /* ----------------------------
+     2) LIVE pill
+     It relied on masked layers for the blobs.
+     So: kill both masked pseudos and recreate blobs on the element itself.
+  ---------------------------- */
+  .livePill::before,
+  .livePill::after{
+    content: none !important;
+    display: none !important;
+  }
+
   .livePill .liveSheen{
     display: none !important;
   }
 
-  /* 3) Put back a clean “glass” rim + glow (safe on iOS) */
-  .livePill,
-  .whatsActionBtn{
+  /* recreate the original blue-left + red-right vibe safely (NO masks) */
+  .livePill{
+    background:
+      radial-gradient(120px 60px at 18% 50%, rgba(90,150,255,0.32), transparent 68%),
+      radial-gradient(140px 70px at 82% 50%, rgba(255,85,120,0.36), transparent 64%),
+      rgba(255,255,255,0.028) !important;
+
+    border-color: rgba(255,255,255,0.14) !important;
+
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.14) inset,
       0 10px 30px rgba(0,0,0,0.45),
-      0 0 22px rgba(120,80,255,0.18) !important; /* subtle glow */
+      0 0 22px rgba(120,80,255,0.16) !important;
   }
 
-  /* Optional: make the buttons look less flat without masks */
-  .whatsActionBtn{
-    background-image: linear-gradient(
-      90deg,
-      rgba(255,255,255,0.08),
-      rgba(255,255,255,0.03)
-    ) !important;
+  /* tap-state punch (since hover is unreliable on iOS) */
+  .livePill:active{
+    background:
+      radial-gradient(120px 60px at 18% 50%, rgba(90,150,255,0.40), transparent 68%),
+      radial-gradient(140px 70px at 82% 50%, rgba(255,85,120,0.44), transparent 64%),
+      rgba(255,255,255,0.06) !important;
+
+    border-color: rgba(255,255,255,0.18) !important;
+    filter: brightness(1.03) !important;
   }
 }
+
 
 /* =========================================================
    GLOBAL: Center Preferences/Alerts modal on ALL devices
