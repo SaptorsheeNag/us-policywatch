@@ -2,6 +2,7 @@
 from __future__ import annotations
 import html as html_lib
 import asyncio
+import random 
 from urllib.parse import urljoin
 from urllib.parse import urlsplit, unquote, urlunsplit
 from email.utils import parsedate_to_datetime
@@ -122,7 +123,7 @@ TN_AGENCY_PRESS = "Tennessee Dept. of Finance & Administration"
 TN_AGENCY_SOS = "Tennessee Secretary of State"
 
 TN_PUBLIC_PAGES = {
-    "press_releases": "https://www.tn.gov/news.press-releases.html",
+    "press_releases": "https://www.tn.gov/news.html",
     "executive_orders": "https://sos.tn.gov/publications/services/executive-orders-governor-bill-lee",
     "proclamations": "https://tnsos.net/publications/proclamations/",
 }
@@ -142,6 +143,34 @@ TN_PRESS_CUTOFF_DT = datetime(2025, 1, 6, tzinfo=timezone.utc)
 # ----------------------------
 # Helpers
 # ----------------------------
+
+async def _http_get_retry(
+    client: httpx.AsyncClient,
+    url: str,
+    *,
+    headers: dict,
+    tries: int = 4,
+    timeout: float = 45.0,
+) -> httpx.Response:
+    last = None
+    for attempt in range(tries):
+        try:
+            r = await client.get(url, headers=headers, timeout=httpx.Timeout(timeout, read=timeout))
+            # retry on common transient / throttling
+            if r.status_code in (408, 425, 429, 500, 502, 503, 504):
+                await asyncio.sleep((2 ** attempt) + random.random())
+                last = r
+                continue
+            return r
+        except (httpx.ReadTimeout, httpx.ConnectTimeout, httpx.RemoteProtocolError, httpx.ConnectError) as e:
+            last = e
+            await asyncio.sleep((2 ** attempt) + random.random())
+
+    # if we get here, raise something meaningful
+    if isinstance(last, httpx.Response):
+        last.raise_for_status()
+    raise last if last else RuntimeError(f"HTTP retry failed: {url}")
+
 
 _SXA_URL_RE = re.compile(
     r"""(?P<url>(?:https?:\/\/www\.michigan\.gov)?\/whitmer\/sxa\/search\/results\/\?(?:[^"'<>]+))""",
@@ -651,14 +680,14 @@ def _urls_from_sxa_payload(payload_text: str, payload_json: Any) -> List[str]:
 
 def _tn_press_list_url(page_idx: int) -> str:
     """
-    TN press releases:
-      page 0 -> https://www.tn.gov/news.press-releases.html
-      page 1 -> https://www.tn.gov/news.press-releases.2.html
-      page 2 -> https://www.tn.gov/news.press-releases.3.html
+    TN Newsroom pages:
+      page 0 -> https://www.tn.gov/news.html
+      page 1 -> https://www.tn.gov/news.2.html
+      page 2 -> https://www.tn.gov/news.3.html
     """
     if page_idx == 0:
-        return "https://www.tn.gov/news.press-releases.html"
-    return f"https://www.tn.gov/news.press-releases.{page_idx+1}.html"
+        return "https://www.tn.gov/news.html"
+    return f"https://www.tn.gov/news.{page_idx+1}.html"
 
 
 def _tn_proclamations_list_url(page_idx: int) -> str:
@@ -673,7 +702,7 @@ def _tn_proclamations_list_url(page_idx: int) -> str:
     return f"{TN_PUBLIC_PAGES['proclamations']}?Search=&SearchGovernor=&sort=&page={page_idx+1}"
 
 _TN_PRESS_DETAIL_RE = re.compile(
-    r"https?://www\.tn\.gov/(?!news\.press-releases)(?:[^\"'\s<>]+/)*\d{4}/\d{1,2}/\d{1,2}/[^\"'\s<>]+\.html",
+    r"https?://(?:www\.)?tn\.gov/(?!news\.press-releases)(?:[^\"'\s<>]+/)*\d{4}/\d{1,2}/\d{1,2}/[^\"'\s<>]+\.html",
     re.I,
 )
 
@@ -1320,135 +1349,118 @@ async def _ingest_tn_press_releases(
     seen: set[str] = set()
     stop = False
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(
-            user_agent=BROWSER_UA_HEADERS.get("user-agent"),
-        )
-        page = await context.new_page()
+    headers = {
+        **BROWSER_UA_HEADERS,
+        "referer": referer,
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "accept-language": "en-US,en;q=0.9",
+        "cache-control": "no-cache",
+        "pragma": "no-cache",
+    }
 
-        try:
-            for page_idx in range(max_pages_each):
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        for page_idx in range(max_pages_each):
+            if stop or out.upserted >= limit_each:
+                break
+
+            list_url = _tn_press_list_url(page_idx)
+
+            r = await _http_get_retry(client, list_url, headers=headers, tries=4, timeout=45.0)
+
+            # TN pages beyond the end often 404
+            if r.status_code == 404:
+                break
+            if r.status_code >= 400:
+                raise RuntimeError(f"TN list page failed {r.status_code}: {list_url}")
+
+            html = r.text or ""
+
+            hrefs = _collect_abs_hrefs(html, list_url)
+
+            urls = [
+                u for u in hrefs
+                if (u.startswith("https://www.tn.gov/") or u.startswith("https://tn.gov/"))
+                and _URL_DATE_RE.search(u)
+                and u.lower().endswith(".html")
+                and "news.press-releases" not in u
+            ]
+
+            if not urls:
+                urls = _extract_urls_matching(html, _TN_PRESS_DETAIL_RE)
+
+            urls = [_norm_url(u) for u in urls if u]
+            seen_local = set()
+            urls = [u for u in urls if not (u in seen_local or seen_local.add(u))]
+
+            if not urls:
+                break
+
+            def _k(u: str):
+                dt = _published_from_url(u)
+                return dt or datetime.min.replace(tzinfo=timezone.utc)
+
+            urls = sorted(urls, key=_k, reverse=True)
+
+            # hard date cutoff
+            urls = [
+                u for u in urls
+                if (_published_from_url(u) or datetime.min.replace(tzinfo=timezone.utc)) >= cutoff_dt
+            ]
+            if not urls:
+                break
+
+            out.fetched_urls += len(urls)
+
+            async with connection() as conn:
+                urls_to_process = urls
+                if not backfill:
+                    urls_to_process = await _filter_new_external_ids(conn, source_id, urls)
+                    out.new_urls += len(urls_to_process)
+                    if not urls_to_process:
+                        break
+
+            for detail_url in urls_to_process:
                 if stop or out.upserted >= limit_each:
                     break
+                if detail_url in seen:
+                    continue
+                seen.add(detail_url)
 
-                list_url = _tn_press_list_url(page_idx)
+                pub_dt = _published_from_url(detail_url)
 
-                # Fetch listing page via Playwright
-                resp = await page.goto(list_url, wait_until="domcontentloaded", timeout=60_000, referer=referer)
-                status_code = resp.status if resp else 0
+                try:
+                    title, body_text = await _fetch_detail_for_summary(client, detail_url, referer=referer)
+                except Exception:
+                    title, body_text = (_title_from_url_fallback(detail_url), "")
 
-                # TN pages beyond the end often 404
-                if status_code == 404:
-                    break
-                if status_code and status_code >= 400:
-                    raise RuntimeError(f"TN list page failed {status_code}: {list_url}")
+                summary = ""
+                if body_text:
+                    summary = summarize_text(body_text, max_sentences=2, max_chars=700) or ""
+                    summary = _soft_normalize_caps(summary)
+                    summary = await _safe_ai_polish(summary, title, detail_url)
 
-                html = await page.content()
+                await _upsert_item(
+                    url=detail_url,
+                    title=title,
+                    summary=summary,
+                    jurisdiction=TN_JURISDICTION,
+                    agency=TN_AGENCY_PRESS,
+                    status=status,
+                    source_name=source_name,
+                    source_key=source_key,
+                    referer=referer,
+                    published_at=pub_dt,
+                )
+                out.upserted += 1
 
-                # Extract detail URLs from listing
-                # Extract detail URLs from listing (ALL TN dept newsroom detail pages)
-                hrefs = _collect_abs_hrefs(html, list_url)
-
-                # Most reliable: match TN detail pages with /YYYY/M/D/...html anywhere on tn.gov
-                urls = [
-                    u for u in hrefs
-                    if u.startswith("https://www.tn.gov/")
-                    and _URL_DATE_RE.search(u)            # /2026/1/26/... etc
-                    and u.lower().endswith(".html")
-                    and "news.press-releases" not in u    # avoid list pages
-                ]
-
-                # Fallback: regex scrape from HTML if hrefs miss anything (rare but helps)
-                if not urls:
-                    urls = _extract_urls_matching(html, _TN_PRESS_DETAIL_RE)
-
-                # normalize + dedupe preserve order
-                urls = [_norm_url(u) for u in urls if u]
-                seen_local = set()
-                urls = [u for u in urls if not (u in seen_local or seen_local.add(u))]
-
-                if not urls:
+                if detail_url == cutoff_url:
+                    out.stopped_at_cutoff = True
+                    stop = True
                     break
 
-                # ✅ enforce newest -> oldest
-                def _k(u: str):
-                    dt = _published_from_url(u)
-                    return dt or datetime.min.replace(tzinfo=timezone.utc)
+                await asyncio.sleep(0.05)
 
-                urls = sorted(urls, key=_k, reverse=True)
-
-                # ✅ hard date cutoff: never go older than cutoff_dt
-                urls = [
-                    u for u in urls
-                    if (_published_from_url(u) or datetime.min.replace(tzinfo=timezone.utc)) >= cutoff_dt
-                ]
-
-                # if nothing on this page survives the cutoff, older pages will be even older → stop paging
-                if not urls:
-                    break
-
-
-                out.fetched_urls += len(urls)
-
-                # --- cron-safe: only process NEW urls ---
-                async with connection() as conn:
-                    urls_to_process = urls
-                    if not backfill:
-                        urls_to_process = await _filter_new_external_ids(conn, source_id, urls)
-                        out.new_urls += len(urls_to_process)
-
-                        # If page has nothing new, stop early (keeps cron fast)
-                        if not urls_to_process:
-                            break
-
-                for detail_url in urls_to_process:
-                    if stop or out.upserted >= limit_each:
-                        break
-                    if detail_url in seen:
-                        continue
-                    seen.add(detail_url)
-
-                    pub_dt = _published_from_url(detail_url)
-
-                    try:
-                        title, body_text = await _pw_fetch_detail_for_summary(page, detail_url, referer=referer)
-                    except Exception:
-                        title, body_text = (_title_from_url_fallback(detail_url), "")
-
-                    summary = ""
-                    if body_text:
-                        summary = summarize_text(body_text, max_sentences=2, max_chars=700) or ""
-                        summary = _soft_normalize_caps(summary)
-                        summary = await _safe_ai_polish(summary, title, detail_url)
-
-                    # upsert unchanged (but only called for new urls in cron mode)
-                    await _upsert_item(
-                        url=detail_url,
-                        title=title,
-                        summary=summary,
-                        jurisdiction=TN_JURISDICTION,
-                        agency=TN_AGENCY_PRESS,
-                        status=status,
-                        source_name=source_name,
-                        source_key=source_key,
-                        referer=referer,
-                        published_at=pub_dt,
-                    )
-                    out.upserted += 1
-
-                    if detail_url == cutoff_url:
-                        out.stopped_at_cutoff = True
-                        stop = True
-                        break
-
-                    await asyncio.sleep(0.05)
-
-                await asyncio.sleep(0.15)
-
-        finally:
-            await context.close()
-            await browser.close()
+            await asyncio.sleep(0.15)
 
     return out
 
@@ -1664,27 +1676,50 @@ async def ingest_tennessee(*, limit_each: int = 5000, max_pages_each: int = 500)
         eo_existing = await conn.fetchval("select count(*) from items where source_id=$1", src_eo) or 0
         proc_existing = await conn.fetchval("select count(*) from items where source_id=$1", src_proc) or 0
 
+        # ✅ ADD THESE DEBUG PRINTS **HERE**
+        print("TN src_press =", src_press, "existing =", press_existing)
+        print("TN src_eo    =", src_eo,    "existing =", eo_existing)
+        print("TN src_proc  =", src_proc,  "existing =", proc_existing)
+
     press_backfill = (press_existing == 0)
     eo_backfill = (eo_existing == 0)
     proc_backfill = (proc_existing == 0)
 
-    press = await _ingest_tn_press_releases(
-        source_id=src_press,
-        backfill=press_backfill,
-        limit_each=limit_each,
-        max_pages_each=max_pages_each,
-    )
-    eos = await _ingest_tn_executive_orders(
-        source_id=src_eo,
-        backfill=eo_backfill,
-        limit_each=limit_each,
-    )
-    procs = await _ingest_tn_proclamations(
-        source_id=src_proc,
-        backfill=proc_backfill,
-        limit_each=limit_each,
-        max_pages_each=max_pages_each,
-    )
+    press_err = None
+    eos_err = None
+    procs_err = None
+
+    try:
+        press = await _ingest_tn_press_releases(
+            source_id=src_press,
+            backfill=press_backfill,
+            limit_each=limit_each,
+            max_pages_each=max_pages_each,
+        )
+    except Exception as e:
+        press = TNSectionResult()
+        press_err = str(e)[:500]
+
+    try:
+        eos = await _ingest_tn_executive_orders(
+            source_id=src_eo,
+            backfill=eo_backfill,
+            limit_each=limit_each,
+        )
+    except Exception as e:
+        eos = TNSectionResult()
+        eos_err = str(e)[:500]
+
+    try:
+        procs = await _ingest_tn_proclamations(
+            source_id=src_proc,
+            backfill=proc_backfill,
+            limit_each=limit_each,
+            max_pages_each=max_pages_each,
+        )
+    except Exception as e:
+        procs = TNSectionResult()
+        procs_err = str(e)[:500]
 
     # Terminal prints (like MN/MI)
     print(
@@ -1711,6 +1746,7 @@ async def ingest_tennessee(*, limit_each: int = 5000, max_pages_each: int = 500)
             "stopped_at_cutoff": press.stopped_at_cutoff,
             "mode": "backfill" if press_backfill else "cron_safe",
             "seen_total": press_existing,
+            "error": press_err,   # ✅ ADD
         },
         "executive_orders": {
             "fetched_urls": eos.fetched_urls,
@@ -1719,6 +1755,7 @@ async def ingest_tennessee(*, limit_each: int = 5000, max_pages_each: int = 500)
             "stopped_at_cutoff": eos.stopped_at_cutoff,
             "mode": "backfill" if eo_backfill else "cron_safe",
             "seen_total": eo_existing,
+            "error": eos_err,     # ✅ ADD
         },
         "proclamations": {
             "fetched_urls": procs.fetched_urls,
@@ -1727,6 +1764,7 @@ async def ingest_tennessee(*, limit_each: int = 5000, max_pages_each: int = 500)
             "stopped_at_cutoff": procs.stopped_at_cutoff,
             "mode": "backfill" if proc_backfill else "cron_safe",
             "seen_total": proc_existing,
+            "error": procs_err,   # ✅ ADD
         },
     }
     return out
